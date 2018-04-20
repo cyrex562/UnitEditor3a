@@ -50,19 +50,19 @@ namespace UnitEditor3a
     }
 
     public class UGraph {
-        private List<UNode> nodes;
-        private List<UEdge> edges;
-        private int[,] adjacencyMatrix;
-        private bool[,] incidenceMatrix;
-        private int numNodes;
+        private List<UNode> _nodes;
+        private List<UEdge> _edges;
+        private int[,] _adjacencyMatrix;
+        private bool[,] _incidenceMatrix;
+        private int _numNodes;
 
         public UGraph(int numNodes)
         {
-            this.numNodes = numNodes;
-            incidenceMatrix = new bool[this.numNodes,this.numNodes];
-            adjacencyMatrix = new int[this.numNodes,this.numNodes];
-            this.nodes = new List<UNode>();
-            this.edges = new List<UEdge>();
+            this._numNodes = numNodes;
+            _incidenceMatrix = new bool[this._numNodes,this._numNodes];
+            _adjacencyMatrix = new int[this._numNodes,this._numNodes];
+            this._nodes = new List<UNode>();
+            this._edges = new List<UEdge>();
         }
 
         public bool Adjacent(UNode x, UNode y)
@@ -232,6 +232,12 @@ namespace UnitEditor3a
             CanvasCreateResourcesEventArgs args)
         {
             Debug.WriteLine("CanvasControl_OnCreateResources()");
+        }
+
+        private void GenerateBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            //throw new NotImplementedException();
+            Debug.WriteLine("Generate button clicked");
         }
     }
 }

@@ -23,7 +23,8 @@
                 Click="GenerateBtn_OnClick"
                 ClickMode="Press"
                 Foreground="Gray"/>
-        <canvas:CanvasControl Grid.Row="0"
+        <canvas:CanvasControl Name="MainDrawingCanvas"
+                             Grid.Row="0"
                               Grid.Column="1"
                               Draw="CanvasControl_Draw"
                               CreateResources="CanvasControl_OnCreateResources"

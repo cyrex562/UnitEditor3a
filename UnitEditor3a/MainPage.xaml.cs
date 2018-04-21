@@ -24,7 +24,7 @@ using Microsoft.Graphics.Canvas;
 namespace UnitEditor3a
 {
     // Graph object
-    // adjacent: whether there is an edge from vertex x to vertex y
+    
     // neighbors: lists all vertices y such that there is an edge from x to y
     // add_vertex: add a vertex x if it does not exist
     // remove_vertex: remove vertex x if it exists
@@ -40,157 +40,41 @@ namespace UnitEditor3a
     //  vertices and colums represent dest vertices
     // incidence matrix: a 2-D boolean matrix in which the rows represent vertices and columns represent edges.
 
-
-    public class UEdge {
-
-    }
-
-    public class UNode {
-
-    }
-
-    public class UGraph {
-        private List<UNode> _nodes;
-        private List<UEdge> _edges;
-        private int[,] _adjacencyMatrix;
-        private bool[,] _incidenceMatrix;
-        private int _numNodes;
-
-        public UGraph(int numNodes)
-        {
-            this._numNodes = numNodes;
-            _incidenceMatrix = new bool[this._numNodes,this._numNodes];
-            _adjacencyMatrix = new int[this._numNodes,this._numNodes];
-            this._nodes = new List<UNode>();
-            this._edges = new List<UEdge>();
-        }
-
-        public bool Adjacent(UNode x, UNode y)
-        {
-            return false;
-        }
-
-        public List<UNode> Neighbors(UNode x)
-        {
-            List<UNode> outList = new List<UNode>();
-            return outList;
-        }
-
-        public bool AddVertex(UNode newNode)
-        {
-            return false;
-        }
-
-        public bool RemoveVertex(UNode nodeToRemove)
-        {
-            return false;
-        }
-
-        public bool AddEdge(UNode x, UNode y)
-        {
-            return false;
-        }
-
-        public bool RemoveEdge(UNode x, UNode y)
-        {
-            return false;
-        }
-
-        public int GetNodeValue(UNode x)
-        {
-            return -1;
-        }
-
-        public bool SetNodeValue(UNode x, int newValue)
-        {
-            return false;
-        }
-
-        public int GetEdgeValue(UNode x, UNode y)
-        {
-            return -1;
-        }
-
-        public bool SetEdgeValue(UNode x, UNode y)
-        {
-            return false;
-        }
-    }
-
-    public class DrawableEdge {
-        public Vector2 StartPos { get; set; }
-        public Vector2 EndPos { get; set; }
-        public int Value { get; set; }
-
-        public DrawableEdge()
-        {
-            this.StartPos = new Vector2(0,0);
-            this.EndPos = new Vector2(0, 0);
-            this.Value = -1;
-        }
-    }
-
-
-    // Represents the drawable version of a node.
-    public class DrawableNode {
-        public int X { get; set; }
-        public int Y { get; set; }
-
-        public int Val { get; set; }
-
-        // TODO: add node ID
-        public DrawableNode()
-        {
-            this.X = 0;
-            this.Y = 0;
-            this.Val = -1;
-        }
-
-        public override string ToString()
-        {
-            return base.ToString() + string.Format("X: {0}, Y: {1}, Val: {2}", this.X, this.Y, this.Val);
-        }
-    }
-
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class MainPage : Page {
-        private const int NODE_SIZE = 40;
-        private const int MIN_NUM_NODES = 3;
-        private const int MAX_NUM_NODES = 9;
-        private const int MIN_NODE_SPACE = 10;
-        private const int MAX_NODE_SPACE = 20;
-        private const int MIN_X = 0;
-        private const int
-            MAX_X = NODE_SIZE * (MAX_NUM_NODES + MAX_NODE_SPACE);
-        private const int MIN_Y = 0;
-        private const int MAX_Y = NODE_SIZE * (MAX_NUM_NODES + MAX_NODE_SPACE);
-        private Color DEFAULT_NODE_COLOR = Colors.Black;
-        private int NODE_LINE_WIDTH = 3;
+        
 
         private List<DrawableNode> drawableNodes;
 
+        private List<DrawableEdge> drawableEdges;
 
+        private Random rng;
+        
         public MainPage()
         {
             Debug.WriteLine("MainPage()");
             this.InitializeComponent();
+            this.drawableNodes = new List<DrawableNode>();
+            this.drawableEdges = new List<DrawableEdge>();
+            this.rng = new Random();
+        }
 
+        public void GenerateGraph()
+        {
+            drawableNodes.Clear();
             // create a graph data structure
-            Random rng = new Random();
-            int nodeCount = rng.Next(1, 5);
-            drawableNodes = new List<DrawableNode>();
-
-            for (int i = 0; i < nodeCount; i++) {
-                int x = rng.Next(MIN_X, MAX_X);
-                int y = rng.Next(MIN_Y, MAX_Y);
+            int nodeCount = rng.Next(Defines.MIN_NUM_NODES, Defines.MAX_NUM_NODES);
+            
+            for (int i = 0; i < nodeCount; i++)
+            {
+                int x = rng.Next(Defines.MIN_X, Defines.MAX_X);
+                int y = rng.Next(Defines.MIN_Y, Defines.MAX_Y);
                 int val = rng.Next();
                 DrawableNode dn = new DrawableNode
                 {
-                    X = x,
-                    Y = y,
-                    Val = val
+                    Position = new Vector2(x, y)
                 };
                 drawableNodes.Add(dn);
                 Debug.WriteLine(dn, string.Format("dn {0}", i));
@@ -199,7 +83,7 @@ namespace UnitEditor3a
 
         void DrawNode(CanvasDrawingSession cds, DrawableNode dn)
         {
-            cds.DrawCircle(new Vector2(dn.X, dn.Y), NODE_SIZE, DEFAULT_NODE_COLOR, NODE_LINE_WIDTH);
+            cds.DrawCircle(dn.Position, Defines.NODE_SIZE, Defines.DEFAULT_NODE_COLOR, Defines.NODE_LINE_WIDTH);
         }
 
         void DrawGraph(CanvasDrawingSession cds,
@@ -238,6 +122,8 @@ namespace UnitEditor3a
         {
             //throw new NotImplementedException();
             Debug.WriteLine("Generate button clicked");
+            GenerateGraph();
+            this.MainDrawingCanvas.Invalidate();
         }
     }
 }

@@ -5,13 +5,13 @@ namespace UnitEditor3a
 {
     
 
-    public class UNode
+    public class UVertex
     {
         //private int value;
         private List<Guid> neighbors;
         private List<Guid> edges;
 
-        public Guid NodeId { get; set; }
+        public Guid VertexId { get; set; }
         public int Value { get; set; }
         
         public List<Guid> Neighbors
@@ -22,9 +22,12 @@ namespace UnitEditor3a
             }
         }
 
-        public UNode()
+        public UVertex()
         {
-
+            this.neighbors = new List<Guid>();
+            this.edges = new List<Guid>();
+            this.VertexId = Guid.NewGuid();
+            this.Value = -1;
         }
 
         public bool NodeInNeighbors(Guid nodeId)

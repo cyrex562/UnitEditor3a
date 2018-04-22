@@ -3,20 +3,16 @@ using System.Collections.Generic;
 
 namespace UnitEditor3a
 {
-    
-
     public class UGraph
     {
-        
-
-        private Dictionary<Guid, UNode> _nodes;
+        private Dictionary<Guid, UVertex> _vertices;
         private Dictionary<Guid, UEdge> _edges;
         private bool[,] _adjacencyMatrix;
         private bool[,] _incidenceMatrix;
         
-        public UGraph(int numNodes)
+        public UGraph()
         {
-            this._nodes = new Dictionary<Guid, UNode>();
+            this._vertices = new Dictionary<Guid, UVertex>();
             this._edges = new Dictionary<Guid, UEdge>();
             this._adjacencyMatrix = new bool[Defines.INIT_NUM_ADJ_MAT_ELE, 
                 Defines.INIT_NUM_ADJ_MAT_ELE];
@@ -24,71 +20,75 @@ namespace UnitEditor3a
                 Defines.INIT_NUM_INC_MAT_ELE];
         }
 
-        public int NodeCount => _nodes.Count;
+        public int VertexCount => _vertices.Count;
 
         public int EdgeCount => _edges.Count;
 
-        public bool Adjacent(UNode x, UNode y)
+        public bool Adjacent(UVertex x, UVertex y)
         {
             return false;
         }
 
+        public Dictionary<Guid, UVertex> Vertices => this._vertices;
+
+        public Dictionary<Guid, UEdge> Edges => this._edges;
+
         // adjacent: whether there is an edge from vertex x to vertex y
-        public List<UNode> Neighbors(UNode x)
+        public List<UVertex> Neighbors(UVertex x)
         {
-            List<UNode> outList = new List<UNode>();
+            List<UVertex> outList = new List<UVertex>();
             return outList;
         }
 
-        public bool NodeExists(Guid nodeId)
+        public bool VertexExists(Guid nodeId)
         {
-            return this._nodes.ContainsKey(nodeId);
+            return this._vertices.ContainsKey(nodeId);
         }
 
         
-        public bool AddVertex(UNode newNode)
+        public bool AddVertex(UVertex vertexToAdd)
         {
-            if (NodeExists(newNode.NodeId) == true)
+            if (VertexExists(vertexToAdd.VertexId) == true)
             {
                 return false;
             }
 
-            this._nodes.Add(newNode.NodeId, newNode);
+            this._vertices.Add(vertexToAdd.VertexId, vertexToAdd);
             return true;
         }
 
 
-        public bool RemoveVertex(UNode nodeToRemove)
+        public bool RemoveVertex(UVertex vertexToRemove)
         {
             return false;
         }
 
-        public bool AddEdge(UNode x, UNode y)
+        public bool AddEdge(UVertex x, UVertex y)
         {
             return false;
         }
 
-        public bool RemoveEdge(UNode x, UNode y)
+        public bool RemoveEdge(UVertex x, UVertex y)
         {
             return false;
         }
 
-        public int GetNodeValue(UNode x)
+        public int GetVertexValue(UVertex x)
         {
             return -1;
         }
 
-        public bool SetNodeValue(UNode x, int newValue)
+        public bool SetVertexValue(UVertex x, int newValue)
         {
             return false;
         }
 
-        public int GetEdgeValue(UNode x, UNode y)
+        public int GetEdgeValue(UVertex x, UVertex y)
         {
             return -1;
         }
 
-        public bool SetEdgeValue(UNode x, UNode y)
+        public bool SetEdgeValue(UVertex x, UVertex y)
         {
             return false;
         }

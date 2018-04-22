@@ -13,21 +13,26 @@
           Height="Auto">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="1720"/>
+            <ColumnDefinition Width="1400"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="900"/>
         </Grid.RowDefinitions>
-        <Button x:Name="generateBtn" 
-                Content="Generate" 
-                Click="GenerateBtn_OnClick"
-                ClickMode="Press"
-                Foreground="Gray"/>
-        <canvas:CanvasControl Name="MainDrawingCanvas"
-                             Grid.Row="0"
-                              Grid.Column="1"
-                              Draw="CanvasControl_Draw"
-                              CreateResources="CanvasControl_OnCreateResources"
-                              ClearColor="CornflowerBlue"/>
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Button x:Name="generateRandomGraphBtn"  Grid.Row="0" Content="Generate Random Graph"  Click="GenerateRandomGraphBtn_OnClick" ClickMode="Press" Foreground="Gray" Margin="0,434,0,434"/>
+            <Button x:Name="randomLayoutBtn" Grid.Row="1" Content="Random Layout" Click="RandomLayoutBtn_OnClick" ClickMode="Press" Foreground="Gray"/>
+            <CheckBox x:Name="fitGraphToViewChkBx" Grid.Row="2" Content="Fit Graph to View" Checked="FitGraphToViewChkBx_Checked" Unchecked="FitGraphToViewChkBx_Unchecked"/>
+        </Grid>
+        
+        <canvas:CanvasControl Name="MainDrawingCanvas" Grid.Row="0" Grid.Column="1" Draw="CanvasControl_Draw" CreateResources="CanvasControl_OnCreateResources" ClearColor="CornflowerBlue" Grid.ColumnSpan="2"/>
+
     </Grid>
 </Page>

@@ -97,14 +97,15 @@
     </Compile>
     <Compile Include="Defines.cs" />
     <Compile Include="DrawableEdge.cs" />
-    <Compile Include="DrawableNode.cs" />
+    <Compile Include="DrawableVertex.cs" />
+    <Compile Include="EdgeDirection.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UEdge.cs" />
     <Compile Include="UGraph.cs" />
-    <Compile Include="UNode.cs" />
+    <Compile Include="UVertex.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

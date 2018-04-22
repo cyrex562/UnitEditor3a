@@ -9,15 +9,19 @@ namespace UnitEditor3a
 {
     public class DrawableEdge
     {
-        public Vector2 StartPos { get; set; }
-        public Vector2 EndPos { get; set; }
-        public int Value { get; set; }
+        public Vector2 HeadPosition { get; set; }
+        public Vector2 TailPosition { get; set; }
+        public Guid HeadVertexId { get; set; }
+        public Guid TailVertexId { get; set;}
+        public Guid EdgeId { get; set; }
 
         public DrawableEdge()
         {
-            this.StartPos = new Vector2(0, 0);
-            this.EndPos = new Vector2(0, 0);
-            this.Value = -1;
+            this.HeadPosition = Vector2.Zero;
+            this.TailPosition = Vector2.Zero;
+            this.HeadVertexId = Guid.Empty;
+            this.TailVertexId = Guid.Empty;
+            this.EdgeId = Guid.Empty;
         }
     }
 }

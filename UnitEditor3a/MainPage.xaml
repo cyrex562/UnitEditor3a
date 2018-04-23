@@ -12,27 +12,45 @@
           Width="Auto" 
           Height="Auto">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="1400"/>
+            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="1360"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="900"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Grid.Column="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Button x:Name="generateRandomGraphBtn"  Grid.Row="0" Content="Generate Random Graph"  Click="GenerateRandomGraphBtn_OnClick" ClickMode="Press" Foreground="Gray" Margin="0,434,0,434"/>
-            <Button x:Name="randomLayoutBtn" Grid.Row="1" Content="Random Layout" Click="RandomLayoutBtn_OnClick" ClickMode="Press" Foreground="Gray"/>
-            <CheckBox x:Name="fitGraphToViewChkBx" Grid.Row="2" Content="Fit Graph to View" Checked="FitGraphToViewChkBx_Checked" Unchecked="FitGraphToViewChkBx_Unchecked"/>
-        </Grid>
+        <StackPanel Grid.Row="0" 
+                    Grid.Column="0">
+            <Button x:Name="generateRandomGraphBtn" 
+                    Content="Generate Random Graph"  
+                    Click="GenerateRandomGraphBtn_OnClick" 
+                    ClickMode="Press" 
+                    Foreground="Gray" 
+                    Margin="5" Width="180" 
+                    HorizontalAlignment="Left"/>
+            <Button x:Name="randomLayoutBtn" 
+                    Content="Random Layout" 
+                    Click="RandomLayoutBtn_OnClick" 
+                    ClickMode="Press" 
+                    Foreground="Gray" 
+                    Margin="5" 
+                    Width="180" 
+                    HorizontalAlignment="Left"/>
+            <CheckBox x:Name="fitGraphToViewChkBx" 
+                      Content="Fit Graph to View"    
+                      Checked="FitGraphToViewChkBx_Checked" 
+                      Unchecked="FitGraphToViewChkBx_Unchecked" 
+                      IsChecked="True"/>
+        </StackPanel>
+        <canvas:CanvasControl Name="MainDrawingCanvas" 
+                              Grid.Row="0" 
+                              Grid.Column="1" 
+                              Draw="CanvasControl_Draw" 
+                              CreateResources="CanvasControl_OnCreateResources"
+                              ClearColor="CornflowerBlue" 
+                              Grid.ColumnSpan="2"
+                              PointerMoved="MainCanvas_PointerMoved"
+                              PointerPressed="MainCanvas_PointerPressed"
+                              />
         
-        <canvas:CanvasControl Name="MainDrawingCanvas" Grid.Row="0" Grid.Column="1" Draw="CanvasControl_Draw" CreateResources="CanvasControl_OnCreateResources" ClearColor="CornflowerBlue" Grid.ColumnSpan="2"/>
-
     </Grid>
 </Page>

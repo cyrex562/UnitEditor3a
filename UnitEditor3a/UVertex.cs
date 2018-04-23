@@ -42,15 +42,34 @@ namespace UnitEditor3a
             return false;
         }
 
-        public bool AddNeighbor(Guid newNeighbor)
+        public void AddNeighbor(Guid newNeighbor)
         {
-            if (NodeInNeighbors(newNeighbor) == true)
+            if (NodeInNeighbors(newNeighbor) == false)
             {
-                return false;
+                this.neighbors.Add(newNeighbor);
+            }
+        }
+
+        public void AddEdge(Guid newEdge)
+        {
+            if (EdgeInEdges(newEdge) == false)
+            {
+                this.edges.Add(newEdge);
+            }
+        }
+
+        // 
+        public bool EdgeInEdges(Guid edgeIdTerm)
+        {
+            foreach(Guid edgeId in this.edges)
+            {
+                if (edgeIdTerm == edgeId)
+                {
+                    return true;
+                }
             }
 
-            this.neighbors.Add(newNeighbor);
-            return true;
+            return false;
         }
     }
 }

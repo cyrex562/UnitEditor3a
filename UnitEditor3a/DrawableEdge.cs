@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Graphics.Canvas.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -14,6 +15,8 @@ namespace UnitEditor3a
         public Guid HeadVertexId { get; set; }
         public Guid TailVertexId { get; set;}
         public Guid EdgeId { get; set; }
+
+        public CanvasGeometry Line { get; set; }
 
         public DrawableEdge()
         {

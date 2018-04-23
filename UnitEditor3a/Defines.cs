@@ -12,7 +12,7 @@ namespace UnitEditor3a
     {
         public const int INIT_NUM_ADJ_MAT_ELE = 8;
         public const int INIT_NUM_INC_MAT_ELE = 8;
-        public const int VERTEX_SIZE = 40;
+        public const int VERTEX_SIZE = 20;
         public const int MIN_NUM_NODES = 6;
         public const int MAX_NUM_NODES = 25;
         public const int MIN_NODE_SPACE = 10;

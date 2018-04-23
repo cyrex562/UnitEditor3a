@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Graphics.Canvas.Geometry;
 
 namespace UnitEditor3a
 {
@@ -15,6 +16,8 @@ namespace UnitEditor3a
         public Vector2 Position { get; set; }
 
         public Guid VertexId { get; set; }
+
+        public CanvasGeometry Circle { get; set; }
 
         // TODO: add node ID
         public DrawableVertex()

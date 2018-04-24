@@ -4,9 +4,12 @@ using System.Collections.Generic;
 namespace UnitEditor3a
 {
     // Graph class
+    [DataContract]
     public class UGraph
     {
+        [DataMember]
         private Dictionary<Guid, UVertex> vertices;
+        [DataMember]
         private Dictionary<Guid, UEdge> edges;
         
         // adjacent matrix: a 2-D matrix in which the rows represent source vertices and colums represent dest vertices
@@ -41,7 +44,7 @@ namespace UnitEditor3a
         public Dictionary<Guid, UEdge> Edges => this.edges;
 
         // adjacent: whether there is an edge from vertex x to vertex y
-        public List<UVertex> Neighbors(UVertex x)
+        public List<Guid> Neighbors(Guid vertexGuid)
         {
             List<UVertex> outList = new List<UVertex>();
             return outList;

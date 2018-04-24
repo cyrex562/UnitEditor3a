@@ -40,6 +40,14 @@
                       Checked="FitGraphToViewChkBx_Checked" 
                       Unchecked="FitGraphToViewChkBx_Unchecked" 
                       IsChecked="True"/>
+            <Button x:Name="saveGraphToFile"
+                    Content="Save Graph to File"
+                    Click="SaveGraphToFile_OnClick"
+                    ClickMode="Press"
+                    Foreground="Gray"
+                    Margin="5"
+                    Width="180"
+                    HorizontalAlignment="Left"/>
         </StackPanel>
         <canvas:CanvasControl Name="MainDrawingCanvas" 
                               Grid.Row="0" 

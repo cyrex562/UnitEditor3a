@@ -335,6 +335,14 @@ namespace UnitEditor3a
                 Debug.WriteLine(string.Format("{2} mouse btn id {0} pressed at {1}", ptr.PointerId, ptrPos, mouseBtn));
             }
         }
+
+        public void SaveGraphToFile_OnClick(Object sender, RoutedEventArgs e) {
+            DataContractJsonSerializer serializer = DataContractJsonSerializer(typeof(UGraph));
+            MemoryStream memStream = new MemoryStream();
+            serializer.WriteObject(memStream, this.currentGraph);
+            memStream.Position = 0;
+            StreamReader sr = new StreamReader(memStream);
+        }
     }
 
     

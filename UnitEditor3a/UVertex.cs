@@ -1,19 +1,24 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace UnitEditor3a
 {
-    
 
+
+    [DataContract]
     public class UVertex
     {
         //private int value;
+        [DataMember]
         private List<Guid> neighbors;
+        [DataMember]
         private List<Guid> edges;
-
+        [DataMember]
         public Guid VertexId { get; set; }
+        [DataMember]
         public int Value { get; set; }
-        
+
         public List<Guid> Neighbors
         {
             get

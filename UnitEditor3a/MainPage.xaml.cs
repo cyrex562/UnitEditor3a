@@ -19,6 +19,9 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 using System.Diagnostics;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Text;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -337,11 +340,13 @@ namespace UnitEditor3a
         }
 
         public void SaveGraphToFile_OnClick(Object sender, RoutedEventArgs e) {
-            DataContractJsonSerializer serializer = DataContractJsonSerializer(typeof(UGraph));
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(UGraph));
             MemoryStream memStream = new MemoryStream();
             serializer.WriteObject(memStream, this.currentGraph);
-            memStream.Position = 0;
-            StreamReader sr = new StreamReader(memStream);
+            byte[] json = memStream.ToArray();
+            //memStream
+            string jsonString = Encoding.UTF8.GetString(json, 0, json.Length);
+            // TODO: write string to file
         }
     }
 

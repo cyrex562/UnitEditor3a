@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+
 
 namespace UnitEditor3a
 {
@@ -7,6 +9,8 @@ namespace UnitEditor3a
     [DataContract]
     public class UGraph
     {
+        [DataMember]
+        public Guid GraphId {get;set;}
         [DataMember]
         private Dictionary<Guid, UVertex> vertices;
         [DataMember]
@@ -46,7 +50,7 @@ namespace UnitEditor3a
         // adjacent: whether there is an edge from vertex x to vertex y
         public List<Guid> Neighbors(Guid vertexGuid)
         {
-            List<UVertex> outList = new List<UVertex>();
+            List<Guid> outList = new List<Guid>();
             return outList;
         }
 

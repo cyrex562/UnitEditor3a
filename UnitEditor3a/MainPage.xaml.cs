@@ -22,6 +22,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using Microsoft.Win32;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -221,6 +222,7 @@ namespace UnitEditor3a
             Debug.WriteLine("Generate button clicked");
             GenerateRandomGraph();
             this.MainDrawingCanvas.Invalidate();
+            this.statusTextBlock.Text = "Random graph generated.";
         }
 
         private void FitGraphToViewChkBx_Checked(
@@ -229,6 +231,10 @@ namespace UnitEditor3a
         {
             Debug.WriteLine("Fit Graph to View Checkbox Checked");
             this.fitGraphToView = true;
+            if (this.statusTextBlock != null) {
+                this.statusTextBlock.Text = "Fit graph to view enabled.";
+            }
+            
         }
 
         private void FitGraphToViewChkBx_Unchecked(
@@ -237,6 +243,7 @@ namespace UnitEditor3a
         {
             this.fitGraphToView = false;
             Debug.WriteLine("Fit Graph to Vew Checkbox Un-Checked");
+            this.statusTextBlock.Text = "Fit graph to view disabled.";
         }
 
         private void LayoutGraphView()
@@ -247,9 +254,11 @@ namespace UnitEditor3a
         private void RandomLayoutBtn_OnClick(
             Object sender, 
             RoutedEventArgs e)
-        {
+        { 
             Debug.WriteLine("Random Layout button clicked");
+
             LayoutDGraphRandom();
+            this.statusTextBlock.Text = "Random layout generated";
         }
 
         private void MainCanvas_PointerMoved(object sender, PointerRoutedEventArgs e) {
@@ -293,9 +302,6 @@ namespace UnitEditor3a
                 // To get mouse state, we need extended pointer details.
                 // We get the pointer info through the getCurrentPoint method
                 // of the event argument. 
-
-                
-
                     Windows.UI.Input.PointerPoint ptrPt = e.GetCurrentPoint(MainDrawingCanvas);
                 Point ptrPos = ptrPt.Position;
                 string mouseBtn = "";
@@ -338,8 +344,10 @@ namespace UnitEditor3a
                 Debug.WriteLine(string.Format("{2} mouse btn id {0} pressed at {1}", ptr.PointerId, ptrPos, mouseBtn));
             }
         }
+       
 
-        public void SaveGraphToFile_OnClick(Object sender, RoutedEventArgs e) {
+
+        private async void SaveGraphToFileAsync(Object sender, RoutedEventArgs e) {
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(UGraph));
             MemoryStream memStream = new MemoryStream();
             serializer.WriteObject(memStream, this.currentGraph);
@@ -347,6 +355,69 @@ namespace UnitEditor3a
             //memStream
             string jsonString = Encoding.UTF8.GetString(json, 0, json.Length);
             // TODO: write string to file
+
+            var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+            savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            savePicker.FileTypeChoices.Add("JSON", new List<string>() { ".json" });
+            savePicker.SuggestedFileName = "New Graph";
+            Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();
+            if (file != null)
+            {
+                Windows.Storage.CachedFileManager.DeferUpdates(file);
+                await Windows.Storage.FileIO.WriteTextAsync(file, jsonString);
+                Windows.Storage.Provider.FileUpdateStatus status = await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+                if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
+                {
+                    this.statusTextBlock.Text = "File" + file.Name + " saved.";
+                } else
+                {
+                    this.statusTextBlock.Text = "File" + file.Name + " not saved.";
+                }
+            } else
+            {
+                this.statusTextBlock.Text = "Operation canceled.";
+            }
+        }
+
+        private async void loadGraphFromFile(Windows.Storage.StorageFile file)
+        {
+            Windows.Storage.CachedFileManager.DeferUpdates(file);
+            string jsonString = await Windows.Storage.FileIO.ReadTextAsync(file);
+            Windows.Storage.Provider.FileUpdateStatus status = await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+            if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
+            {
+                this.statusTextBlock.Text = string.Format("file {0} read");
+
+                UGraph loadedGraph = new UGraph();
+                MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
+                DataContractJsonSerializer ser = new DataContractJsonSerializer(loadedGraph.GetType());
+                loadedGraph = ser.ReadObject(ms) as UGraph;
+                //ms.Close();
+                this.currentGraph = loadedGraph;
+                // TODO: fire event to update graph;
+                LayoutDGraphRandom();
+            } else
+            {
+                this.statusTextBlock.Text = string.Format("file {0} not read");
+            }
+        }
+
+        private async void LoadGraphFromFileAsync(Object sender, RoutedEventArgs e)
+        {
+            var loadPicker = new Windows.Storage.Pickers.FileOpenPicker();
+            loadPicker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+            loadPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            loadPicker.FileTypeFilter.Add(".json");
+
+            Windows.Storage.StorageFile file = await loadPicker.PickSingleFileAsync();
+            if (file != null)
+            {
+                this.statusTextBlock.Text = string.Format("selected file: {0}", file.Name);
+                loadGraphFromFile(file);
+            } else
+            {
+                this.statusTextBlock.Text = string.Format("operation cancelled.");
+            }
         }
     }
 

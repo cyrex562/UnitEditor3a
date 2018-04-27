@@ -28,6 +28,7 @@ namespace UnitEditor3a
         {
             this.vertices = new Dictionary<Guid, UVertex>();
             this.edges = new Dictionary<Guid, UEdge>();
+            this.GraphId = new Guid();
             //this._adjacencyMatrix = new bool[Defines.INIT_NUM_ADJ_MAT_ELE, 
             //    Defines.INIT_NUM_ADJ_MAT_ELE];
             //this._incidenceMatrix = new bool[Defines.INIT_NUM_INC_MAT_ELE, 

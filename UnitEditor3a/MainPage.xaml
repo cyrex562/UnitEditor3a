@@ -12,11 +12,12 @@
           Width="Auto" 
           Height="Auto">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="240"/>
-            <ColumnDefinition Width="1360"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="900"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" 
                     Grid.Column="0">
@@ -42,7 +43,7 @@
                       IsChecked="True"/>
             <Button x:Name="saveGraphToFile"
                     Content="Save Graph to File"
-                    Click="SaveGraphToFile_OnClick"
+                    Click="SaveGraphToFileAsync"
                     ClickMode="Press"
                     Foreground="Gray"
                     Margin="5"
@@ -59,6 +60,7 @@
                               PointerMoved="MainCanvas_PointerMoved"
                               PointerPressed="MainCanvas_PointerPressed"
                               />
-        
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="" Name="statusTextBlock"/>
+
     </Grid>
 </Page>

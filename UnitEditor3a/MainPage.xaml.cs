@@ -1,300 +1,177 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using System.Diagnostics;
-using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.Geometry;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Text;
-using Microsoft.Win32;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace UnitEditor3a
 {
-    // Graph object
-    
-    // neighbors: lists all vertices y such that there is an edge from x to y
-    // add_vertex: add a vertex x if it does not exist
-    // remove_vertex: remove vertex x if it exists
-    // add_edge: add edge from vertex X to vertex Y if it does not exist
-    // remove_edge: remove edge from vertex X to vertex Y if it exists
-    // get_vertex_value: retrieve value for vertrex
-    // set_vertex_value: set value for vertex
-    // get_edge_value: return value for edge
-    // set_edge_value: set value for edge.
-    // adjacency list: every vertex stores a list of adjacent vertices.
-    // vertices can also store incident edges and edges can store incident vertices
-
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class MainPage : Page {
-        private Dictionary<Guid, DrawableVertex> drawableVertices;
-        private Dictionary<Guid, DrawableEdge> drawableEdges;
-        private Random rng;
-        private bool fitGraphToView;
-        private UGraph currentGraph;
+        private AppContext appCtx;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public MainPage()
         {
             Debug.WriteLine("MainPage()");
-            this.InitializeComponent();
-            this.drawableVertices = new Dictionary<Guid, DrawableVertex>();
-            this.drawableEdges = new Dictionary<Guid, DrawableEdge>();
-            this.rng = new Random();
-            this.fitGraphToView = true;
+            this.appCtx = new AppContext();
+            Debug.WriteLine("Init Complete...");
         }
-
-        public void GenerateRandomGraph()
-        {
-            int numNodes = rng.Next(Defines.MIN_NUM_NODES, Defines.MAX_NUM_NODES);
-            this.currentGraph = new UGraph();
-            for (int i = 0; i < numNodes; i++)
-            {
-                UVertex uv = new UVertex
-                {
-                    Value = rng.Next()
-                };
-                this.currentGraph.AddVertex(uv);
-            }
-
-            foreach (KeyValuePair<Guid, UVertex> kvp1 in this.currentGraph.Vertices)
-            {
-                foreach(KeyValuePair<Guid,UVertex> kvp2 in this.currentGraph.Vertices)
-                {
-                    if (kvp1.Value.VertexId != kvp2.Value.VertexId)
-                    {
-                        int prob = this.rng.Next(1, 10);
-                        if (prob >= Defines.EDGE_PROBABILITY * 10)
-                        {
-                            UEdge ue = new UEdge
-                            {
-                                HeadVertexId = kvp1.Value.VertexId,
-                                TailVertexId = kvp2.Value.VertexId,
-                                Value = this.rng.Next()
-                            };
-                            this.currentGraph.Edges.Add(ue.EdgeId, ue);
-                            kvp1.Value.AddNeighbor(kvp2.Value.VertexId);
-                            kvp1.Value.AddEdge(ue.EdgeId);
-                            kvp2.Value.AddNeighbor(kvp1.Value.VertexId);
-                            kvp2.Value.AddEdge(ue.EdgeId);
-
-                        }
-                    }
-                    
-                }
-            }
-
-            LayoutDGraphRandom();
-        }
-
-        void DrawNode(CanvasDrawingSession cds, DrawableVertex dn)
-        {
-            //cds.DrawCircle(dn.Position, Defines.VERTEX_SIZE, Defines.DEFAULT_NODE_COLOR, Defines.NODE_LINE_WIDTH);
-            cds.DrawGeometry(dn.Circle, Defines.DEFAULT_NODE_COLOR, Defines.NODE_LINE_WIDTH);
-        }
-
-        private void DrawEdge(CanvasDrawingSession cds, DrawableEdge de)
-        {
-            //cds.DrawLine(de.HeadPosition, de.TailPosition, Defines.DEF_EDGE_COLOR, Defines.DEF_EDGE_LINE_WIDTH);
-            cds.DrawGeometry(de.Line, Defines.DEFAULT_NODE_COLOR, Defines.NODE_LINE_WIDTH);
-        }
-
-        DrawableVertex GetDrawableNodeByNodeId(Guid nodeId) => this.drawableVertices[nodeId];
-
-        void LayoutDGraphRandom()
-        {
-            this.drawableEdges.Clear();
-            this.drawableVertices.Clear();
-            foreach (KeyValuePair<Guid, UVertex> kvp in this.currentGraph.Vertices)
-            {
-                Int32 min_x = Defines.VERTEX_SIZE;
-                Int32 min_y = Defines.VERTEX_SIZE;
-                Int32 max_x = 0;
-                Int32 max_y = 0;
-                if (this.fitGraphToView == true)
-                {
-                    max_x = (Int32)MainDrawingCanvas.ActualWidth - Defines.VERTEX_SIZE;
-                    max_y = (Int32)MainDrawingCanvas.ActualHeight - Defines.VERTEX_SIZE;
-                }
-                else
-                {
-                    max_x = Defines.VERTEX_SIZE * (this.currentGraph.VertexCount + Defines.MAX_VERTEX_SPACE);
-                    max_y = Defines.VERTEX_SIZE * (this.currentGraph.VertexCount + Defines.MAX_VERTEX_SPACE);
-                }
-
-                Vector2 circlePos = new Vector2(this.rng.Next(min_x, max_x), this.rng.Next(min_y, max_y));
-                DrawableVertex dn = new DrawableVertex
-                {
-                    Position = circlePos,
-                    VertexId = kvp.Value.VertexId,
-                    Circle = CanvasGeometry.CreateCircle(MainDrawingCanvas, circlePos, Defines.VERTEX_SIZE)
-                };
-                this.drawableVertices[dn.VertexId] = dn;
-            }
-
-            foreach(KeyValuePair<Guid, UEdge> kvp in this.currentGraph.Edges)
-            {
-                CanvasPathBuilder pathBuilder = new CanvasPathBuilder(MainDrawingCanvas);
-                
-                DrawableEdge de = new DrawableEdge
-                {
-                    EdgeId = kvp.Value.EdgeId,
-                    HeadVertexId = kvp.Value.HeadVertexId,
-                    TailVertexId = kvp.Value.TailVertexId,
-                };
-                de.HeadPosition = GetDrawableNodeByNodeId(de.HeadVertexId).Position;
-                de.TailPosition = GetDrawableNodeByNodeId(de.TailVertexId).Position;
-                pathBuilder.BeginFigure(de.HeadPosition);
-                pathBuilder.AddLine(de.TailPosition);
-                pathBuilder.EndFigure(CanvasFigureLoop.Open);
-                de.Line = CanvasGeometry.CreatePath(pathBuilder);
-                this.drawableEdges[de.EdgeId] = de;
-            }
-
-            MainDrawingCanvas.Invalidate();
-        }
-
-        void LayoutDGraphGrid()
-        {
-            // clear the lists of drawable nodes and edges
-            // iterate over the current graph's nodes
-            // generate a drawable node 
-            // store the drawable node
-            // interate over the current graph's edges
-            // generate a drawable edge
-            // store the drawable edge
-            // invalidate the curent  canvas, triggering re-draw
-        }
-
-        void DrawGraph(
-            CanvasDrawingSession cds,
-            Dictionary<Guid, 
-            DrawableVertex> drawableNodes)
-        {
-            foreach (KeyValuePair<Guid, DrawableVertex> kvp in drawableNodes) 
-            {
-                DrawNode(cds, kvp.Value);
-            }
-
-            foreach (KeyValuePair<Guid, DrawableEdge> kvp in drawableEdges)
-            {
-                DrawEdge(cds, kvp.Value);
-            }
-        }
-
-        private void CanvasControl_Draw(
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        /// <param name="appContext"></param>
+        private void CanvasDraw(
             CanvasControl sender, 
             CanvasDrawEventArgs args)
         {
-            Debug.WriteLine("CanvasControl_Draw()");
-            DrawGraph(args.DrawingSession, drawableVertices);
+            Debug.WriteLine("CanvasDraw()");
+            if (this.appCtx.CurrentGraph != null)
+            {
+                DrawingUtils.DrawGraph(args.DrawingSession, this.appCtx.DrawableVertices, this.appCtx.DrawableEdges);
+            }
+           
         }
 
-        private void CanvasControl_OnCreateResources(
-            CanvasControl sender, 
-            CanvasCreateResourcesEventArgs args)
-        {
-            Debug.WriteLine("CanvasControl_OnCreateResources()");
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        //private void CanvasCreateResources(
+        //    CanvasControl sender, 
+        //    CanvasCreateResourcesEventArgs args)
+        //{
+        //    Debug.WriteLine("CanvasCreateResources");
+        //}
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GenerateRandomGraphBtn_OnClick(
-            object sender, 
+            Object sender, 
             RoutedEventArgs e)
         {
             Debug.WriteLine("Generate button clicked");
-            GenerateRandomGraph();
-            this.MainDrawingCanvas.Invalidate();
+            // generate the graph
+            this.appCtx.CurrentGraph = GraphUtils.GenerateRandomGraph(this.appCtx);
+            // update the appcontext graph state
+            this.appCtx.CurrentGraphState = GraphState.New;
+            // layout the graph
+            //DrawingUtils.LayoutDGraphRandom(this.appCtx, this.MainDrawingCanvas, this.appCtx.DrawableEdges, this.appCtx.DrawableVertices);
+            //this.MainDrawingCanvas.Invalidate();
             this.statusTextBlock.Text = "Random graph generated.";
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FitGraphToViewChkBx_Checked(
             Object sender, 
             RoutedEventArgs e)
         {
             Debug.WriteLine("Fit Graph to View Checkbox Checked");
-            this.fitGraphToView = true;
+            this.appCtx.FitGraphToView = true;
             if (this.statusTextBlock != null) {
                 this.statusTextBlock.Text = "Fit graph to view enabled.";
             }
             
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FitGraphToViewChkBx_Unchecked(
             Object sender, 
             RoutedEventArgs e)
         {
-            this.fitGraphToView = false;
+            this.appCtx.FitGraphToView = false;
             Debug.WriteLine("Fit Graph to Vew Checkbox Un-Checked");
             this.statusTextBlock.Text = "Fit graph to view disabled.";
         }
 
-        private void LayoutGraphView()
-        {
-            throw new NotImplementedException();
-        }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RandomLayoutBtn_OnClick(
             Object sender, 
             RoutedEventArgs e)
         { 
             Debug.WriteLine("Random Layout button clicked");
 
-            LayoutDGraphRandom();
+            //DrawingUtils.LayoutDGraphRandom(this.appCtx, this.MainDrawingCanvas, this.appCtx.DrawableEdges, this.appCtx.DrawableVertices);
             this.statusTextBlock.Text = "Random layout generated";
         }
 
-        private void MainCanvas_PointerMoved(object sender, PointerRoutedEventArgs e) {
-            Windows.UI.Xaml.Input.Pointer ptr = e.Pointer;
-            if (ptr.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
-            {
-                // To get mouse state, we need extended pointer details.
-                // We get the pointer info through the getCurrentPoint method
-                // of the event argument. 
-                Windows.UI.Input.PointerPoint ptrPt = e.GetCurrentPoint(MainDrawingCanvas);
-                Point ptrPos = ptrPt.Position;
-                if (ptrPt.Properties.IsLeftButtonPressed)
-                {
-                    Debug.WriteLine(string.Format("left mouse btn: {0}", ptrPt.PointerId));
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CanvasPointerMoved(
+            Object sender, 
+            PointerRoutedEventArgs e)
+        {
+            //Windows.UI.Xaml.Input.Pointer ptr = e.Pointer;
+            //if (ptr.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+            //{
+            //    // To get mouse state, we need extended pointer details.
+            //    // We get the pointer info through the getCurrentPoint method
+            //    // of the event argument. 
+            //    //Windows.UI.Input.PointerPoint ptrPt = e.GetCurrentPoint(MainDrawingCanvas);
+            //    Point ptrPos = ptrPt.Position;
+            //    if (ptrPt.Properties.IsLeftButtonPressed)
+            //    {
+            //        Debug.WriteLine(string.Format("left mouse btn: {0}", ptrPt.PointerId));
                     
 
-                    //foreach (KeyValuePair<Guid, DrawableVertex> kvp in this.drawableVertices)
-                    //{
-                    //    Rect bounds = kvp.Value.
-                    //}
-                }
-                if (ptrPt.Properties.IsMiddleButtonPressed)
-                {
-                    Debug.WriteLine(string.Format("middle mouse btn: {0}", ptrPt.PointerId));
-                }
-                if (ptrPt.Properties.IsRightButtonPressed)
-                {
-                    Debug.WriteLine(string.Format("right mouse btn: {0}", ptrPt.PointerId));
-                }
-            }
+            //        //foreach (KeyValuePair<Guid, DrawableVertex> kvp in this.drawableVertices)
+            //        //{
+            //        //    Rect bounds = kvp.Value.
+            //        //}
+            //    }
+            //    if (ptrPt.Properties.IsMiddleButtonPressed)
+            //    {
+            //        Debug.WriteLine(string.Format("middle mouse btn: {0}", ptrPt.PointerId));
+            //    }
+            //    if (ptrPt.Properties.IsRightButtonPressed)
+            //    {
+            //        Debug.WriteLine(string.Format("right mouse btn: {0}", ptrPt.PointerId));
+            //    }
+            //}
 
-            // Prevent most handlers along the event route from handling the same event again.
-            e.Handled = true;
+            //// Prevent most handlers along the event route from handling the same event again.
+            //e.Handled = true;
         }
 
-        private void MainCanvas_PointerPressed(object sender, PointerRoutedEventArgs e)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CanvasPointerPressed(
+            Object sender, 
+            PointerRoutedEventArgs e)
         {
             Windows.UI.Xaml.Input.Pointer ptr = e.Pointer;
             if (ptr.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
@@ -302,63 +179,63 @@ namespace UnitEditor3a
                 // To get mouse state, we need extended pointer details.
                 // We get the pointer info through the getCurrentPoint method
                 // of the event argument. 
-                    Windows.UI.Input.PointerPoint ptrPt = e.GetCurrentPoint(MainDrawingCanvas);
-                Point ptrPos = ptrPt.Position;
-                string mouseBtn = "";
-                if (ptrPt.Properties.IsLeftButtonPressed)
-                {
-                    mouseBtn = "Left";
+                //Windows.UI.Input.PointerPoint ptrPt = 
+                //    e.GetCurrentPoint(this.MainDrawingCanvas);
+                //Point ptrPos = ptrPt.Position;
+                //String mouseBtn = "";
+                //if (ptrPt.Properties.IsLeftButtonPressed)
+                //{
+                //    mouseBtn = "Left";
 
-                    bool shapeFound = false;
-                    foreach (KeyValuePair<Guid, DrawableVertex> kvp in this.drawableVertices)
-                    {
-                        Rect bounds = kvp.Value.Circle.ComputeBounds();
-                        if (bounds.Contains(ptrPos) == true) {
-                            Debug.WriteLine("vertex clicked!");
-                            shapeFound = true;
-                            break;
-                        }
-                    }
+                //    bool shapeFound = false;
+                //    foreach (KeyValuePair<Guid, DrawableVertex> kvp in this.appCtx.DrawableVertices)
+                //    {
+                //        Rect bounds = kvp.Value.Circle.ComputeBounds();
+                //        if (bounds.Contains(ptrPos) == true) {
+                //            Debug.WriteLine("vertex clicked!");
+                //            shapeFound = true;
+                //            break;
+                //        }
+                //    }
 
-                    if (shapeFound == false)
-                    {
-                        foreach(KeyValuePair<Guid, DrawableEdge> kvp in this.drawableEdges)
-                        {
-                            Rect bounds = kvp.Value.Line.ComputeBounds();
-                            if (bounds.Contains(ptrPos) == true)
-                            {
-                                Debug.WriteLine("edge clicked!");
-                                break;
-                            }
-                        }
-                    }
-                }
-                else if (ptrPt.Properties.IsRightButtonPressed)
-                {
-                    mouseBtn = "Right";
-                }
-                else if (ptrPt.Properties.IsMiddleButtonPressed)
-                {
-                    mouseBtn = "Middle";
-                }
-                Debug.WriteLine(string.Format("{2} mouse btn id {0} pressed at {1}", ptr.PointerId, ptrPos, mouseBtn));
+                //    if (shapeFound == false)
+                //    {
+                //        foreach(KeyValuePair<Guid, DrawableEdge> kvp in this.appCtx.DrawableEdges)
+                //        {
+                //            Rect bounds = kvp.Value.Line.ComputeBounds();
+                //            if (bounds.Contains(ptrPos) == true)
+                //            {
+                //                Debug.WriteLine("edge clicked!");
+                //                break;
+                //            }
+                //        }
+                //    }
+                //}
+                //else if (ptrPt.Properties.IsRightButtonPressed)
+                //{
+                //    mouseBtn = "Right";
+                //}
+                //else if (ptrPt.Properties.IsMiddleButtonPressed)
+                //{
+                //    mouseBtn = "Middle";
+                //}
+                //Debug.WriteLine(String.Format("{2} mouse btn id {0} pressed at {1}", ptr.PointerId, ptrPos, mouseBtn));
             }
         }
-       
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void SaveGraphToFileAsync(Object sender, RoutedEventArgs e) {
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(UGraph));
-            MemoryStream memStream = new MemoryStream();
-            serializer.WriteObject(memStream, this.currentGraph);
-            byte[] json = memStream.ToArray();
-            //memStream
-            string jsonString = Encoding.UTF8.GetString(json, 0, json.Length);
-            // TODO: write string to file
+            String jsonString = GraphUtils.GraphToJson(this.appCtx.CurrentGraph);
 
-            var savePicker = new Windows.Storage.Pickers.FileSavePicker();
-            savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-            savePicker.FileTypeChoices.Add("JSON", new List<string>() { ".json" });
+            var savePicker = new Windows.Storage.Pickers.FileSavePicker
+            {
+                SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary
+            };
+            savePicker.FileTypeChoices.Add("JSON", new List<String>() { ".json" });
             savePicker.SuggestedFileName = "New Graph";
             Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();
             if (file != null)
@@ -379,30 +256,40 @@ namespace UnitEditor3a
             }
         }
 
-        private async void loadGraphFromFile(Windows.Storage.StorageFile file)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        private async void LoadGraphFromFile(Windows.Storage.StorageFile file)
         {
             Windows.Storage.CachedFileManager.DeferUpdates(file);
             string jsonString = await Windows.Storage.FileIO.ReadTextAsync(file);
             Windows.Storage.Provider.FileUpdateStatus status = await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
             if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
             {
-                this.statusTextBlock.Text = string.Format("file {0} read");
+                this.statusTextBlock.Text = string.Format("file {0} read", file.Name);
 
-                UGraph loadedGraph = new UGraph();
-                MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
-                DataContractJsonSerializer ser = new DataContractJsonSerializer(loadedGraph.GetType());
-                loadedGraph = ser.ReadObject(ms) as UGraph;
+                UGraph loadedGraph = GraphUtils.JsonToGraph(jsonString);
                 //ms.Close();
-                this.currentGraph = loadedGraph;
+                this.appCtx.CurrentGraph = loadedGraph;
                 // TODO: fire event to update graph;
-                LayoutDGraphRandom();
-            } else
+                //DrawingUtils.LayoutDGraphRandom(this.appCtx, this.MainDrawingCanvas, this.appCtx.DrawableEdges, this.appCtx.DrawableVertices);
+            }
+            else
             {
-                this.statusTextBlock.Text = string.Format("file {0} not read");
+                this.statusTextBlock.Text = 
+                    string.Format("file {0} not read", file.Name);
             }
         }
 
-        private async void LoadGraphFromFileAsync(Object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void LoadGraphFromFileAsync(
+            Object sender, 
+            RoutedEventArgs e)
         {
             var loadPicker = new Windows.Storage.Pickers.FileOpenPicker();
             loadPicker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
@@ -413,13 +300,36 @@ namespace UnitEditor3a
             if (file != null)
             {
                 this.statusTextBlock.Text = string.Format("selected file: {0}", file.Name);
-                loadGraphFromFile(file);
+                LoadGraphFromFile(file);
             } else
             {
                 this.statusTextBlock.Text = string.Format("operation cancelled.");
             }
         }
-    }
 
-    
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void exitBtn_Click(Object sender, RoutedEventArgs e)
+        {
+            Application.Current.Exit();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NewGraphBtn_Click(Object sender, RoutedEventArgs e)
+        {
+            // TODO: If graph has been modified, prompt to save
+            this.appCtx.CurrentGraph = new UGraph();
+            this.appCtx.DrawableEdges = new Dictionary<Guid, DrawableEdge>();
+            this.appCtx.DrawableVertices = new Dictionary<Guid, DrawableVertex>();
+            //this.MainDrawingCanvas.Invalidate();
+            this.appCtx.CurrentGraphState = GraphState.New;
+        }
+    }
 }

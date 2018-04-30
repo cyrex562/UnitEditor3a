@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 
 
@@ -12,21 +13,25 @@ namespace UnitEditor3a
         [DataMember]
         public Guid GraphId {get;set;}
         [DataMember]
-        public Dictionary<Guid, UVertex> Vertices { get; }
+        public Dictionary<Guid, UVertex> Vertices { get; set;  }
         [DataMember]
-        public Dictionary<Guid, UEdge> Edges { get; }
+        public Dictionary<Guid, UEdge> Edges { get; set;  }
 
         // adjacent matrix: a 2-D matrix in which the rows represent source vertices and columns represent dest vertices
         [DataMember]
-        public Dictionary<Guid, List<Guid>> AdjacencyMatrix { get; }
+        public Dictionary<Guid, List<Guid>> AdjacencyMatrix { get; set;  }
 
         // incidence matrix: a 2-D boolean matrix in which the rows represent vertices and columns represent edges.
         // List of edges for a given Vertex ID
         [DataMember]
-        public Dictionary<Guid, List<Guid>> IncidenceMatrix { get; }
+        public Dictionary<Guid, List<Guid>> IncidenceMatrix { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public UGraph()
         {
+            Debug.WriteLine("UGraph()");
             this.Vertices = new Dictionary<Guid, UVertex>();
             this.Edges = new Dictionary<Guid, UEdge>();
             this.GraphId = new Guid();
@@ -34,12 +39,12 @@ namespace UnitEditor3a
             this.IncidenceMatrix = new Dictionary<Guid, List<Guid>>();
         }
 
-        public int VertexCount => Vertices.Count;
+        //public int VertexCount => this.Vertices.Count;
 
-        public int EdgeCount => Edges.Count;
+        //public int EdgeCount => this.Edges.Count;
 
         // adjacent: whether there is an edge from vertex x to vertex y
-        public bool Adjacent(Guid headVertexId, Guid tailVertexId)
+        public Boolean Adjacent(Guid headVertexId, Guid tailVertexId)
         {
             if (this.Vertices.ContainsKey(headVertexId) == false)
             {
@@ -67,13 +72,10 @@ namespace UnitEditor3a
         }
 
         // check for the existence of a vertex with a given ID
-        public bool VertexExists(Guid nodeId)
-        {
-            return this.Vertices.ContainsKey(nodeId);
-        }
+        public Boolean VertexExists(Guid nodeId) => this.Vertices.ContainsKey(nodeId);
 
         // Add a vertex
-        public bool AddVertex(UVertex vertexToAdd)
+        public Boolean AddVertex(UVertex vertexToAdd)
         {
             if (VertexExists(vertexToAdd.VertexId) == true)
             {
@@ -87,7 +89,7 @@ namespace UnitEditor3a
         }
 
         // Remove a vertex
-        public bool RemoveVertex(Guid vertexToRemove)
+        public Boolean RemoveVertex(Guid vertexToRemove)
         {
             if (!VertexExists(vertexToRemove))
             {
@@ -99,7 +101,7 @@ namespace UnitEditor3a
         }
 
         // Add an edge
-        public bool AddEdge(UEdge edgeToAdd)
+        public Boolean AddEdge(UEdge edgeToAdd)
         {
             if (this.Edges.ContainsKey(edgeToAdd.EdgeId))
             {
@@ -114,7 +116,7 @@ namespace UnitEditor3a
         }
 
         // Remove an edge
-        public bool RemoveEdge(Guid edgeToRemove)
+        public Boolean RemoveEdge(Guid edgeToRemove)
         {
             UEdge ue = this.Edges[edgeToRemove];
             Guid headVertexId = ue.HeadVertexId;
@@ -132,7 +134,7 @@ namespace UnitEditor3a
         }
 
         // Get a vertexes' value
-        public int GetVertexValue(Guid vertexId)
+        public Int32 GetVertexValue(Guid vertexId)
         {
             if (!this.VertexExists(vertexId))
             {
@@ -142,7 +144,7 @@ namespace UnitEditor3a
         }
 
         // Set a vertexe's value
-        public bool SetVertexValue(Guid vertexId, int newValue)
+        public Boolean SetVertexValue(Guid vertexId, Int32 newValue)
         {
             if (!this.VertexExists(vertexId))
             {
@@ -154,7 +156,7 @@ namespace UnitEditor3a
         }
 
         // Get an edge's value
-        public int GetEdgeValue(Guid edgeId)
+        public Int32 GetEdgeValue(Guid edgeId)
         {
             if (!this.Edges.ContainsKey(edgeId))
             {
@@ -164,7 +166,7 @@ namespace UnitEditor3a
         }
 
         // Set an edge's value
-        public bool SetEdgeValue(Guid edgeId, int newValue)
+        public Boolean SetEdgeValue(Guid edgeId, Int32 newValue)
         {
             if (!this.Edges.ContainsKey(edgeId))
             {

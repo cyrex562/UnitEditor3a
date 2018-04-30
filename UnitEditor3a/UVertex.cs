@@ -17,7 +17,7 @@ namespace UnitEditor3a
         [DataMember]
         public Guid VertexId { get; set; }
         [DataMember]
-        public int Value { get; set; }
+        public Int32 Value { get; set; }
 
         public List<Guid> Neighbors
         {
@@ -35,7 +35,7 @@ namespace UnitEditor3a
             this.Value = -1;
         }
 
-        public bool NodeInNeighbors(Guid nodeId)
+        public Boolean NodeInNeighbors(Guid nodeId)
         {
             foreach(Guid neighId in this.neighbors) {
                 if (neighId == nodeId)
@@ -64,7 +64,7 @@ namespace UnitEditor3a
         }
 
         // 
-        public bool EdgeInEdges(Guid edgeIdTerm)
+        public Boolean EdgeInEdges(Guid edgeIdTerm)
         {
             foreach(Guid edgeId in this.edges)
             {

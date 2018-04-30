@@ -71,6 +71,11 @@ namespace UnitEditor3a
                 // Ensure the current window is active
                 Window.Current.Activate();
             }
+
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                this.DebugSettings.EnableFrameRateCounter = true;
+            }
         }
 
         /// <summary>

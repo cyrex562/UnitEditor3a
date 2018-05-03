@@ -2,10 +2,10 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Common">
-      <UniqueIdentifier>e063d26c-68cc-49d7-b712-91294897f4a4</UniqueIdentifier>
+      <UniqueIdentifier>451a4b3a-1333-4e40-bda0-7365e2ca612c</UniqueIdentifier>
     </Filter>
     <Filter Include="Assets">
-      <UniqueIdentifier>587dfd95-1f4c-4523-9f8c-153dfd904021</UniqueIdentifier>
+      <UniqueIdentifier>59d3bfc3-3ef1-41d7-9ab8-8384c519a5ac</UniqueIdentifier>
       <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
     </Filter>
   </ItemGroup>
@@ -16,11 +16,26 @@
     <ClCompile Include="App.xaml.cpp" />
     <ClCompile Include="MainPage.xaml.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="..\GraphEditor3b\DrawableEdge.cpp" />
+    <ClCompile Include="..\GraphEditor3b\DrawableGraph.cpp" />
+    <ClCompile Include="..\GraphEditor3b\DrawableVertex.cpp" />
+    <ClCompile Include="..\GraphEditor3b\DrawingContext.cpp" />
+    <ClCompile Include="..\GraphEditor3b\Edge.cpp" />
+    <ClCompile Include="..\GraphEditor3b\Graph.cpp" />
+    <ClCompile Include="..\GraphEditor3b\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h" />
     <ClInclude Include="MainPage.xaml.h" />
+    <ClInclude Include="..\GraphEditor3b\DrawableEdge.h" />
+    <ClInclude Include="..\GraphEditor3b\DrawableGraph.h" />
+    <ClInclude Include="..\GraphEditor3b\DrawableVertex.h" />
+    <ClInclude Include="..\GraphEditor3b\DrawingContext.h" />
+    <ClInclude Include="..\GraphEditor3b\Edge.h" />
+    <ClInclude Include="..\GraphEditor3b\EdgeDirection.h" />
+    <ClInclude Include="..\GraphEditor3b\Graph.h" />
+    <ClInclude Include="..\GraphEditor3b\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">
@@ -49,7 +64,7 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GraphEditor3b_TemporaryKey.pfx" />
+    <None Include="GraphEditor3b2_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -8,7 +8,7 @@
 
 
 
-namespace GraphEditor3b
+namespace GraphEdtor3b1
 {
     [::Windows::Foundation::Metadata::WebHostHidden]
     partial ref class MainPage : public ::Windows::UI::Xaml::Controls::Page, 
@@ -21,12 +21,7 @@ namespace GraphEditor3b
         virtual ::Windows::UI::Xaml::Markup::IComponentConnector^ GetBindingConnector(int connectionId, ::Platform::Object^ target);
     
     private:
-        void UnloadObject(::Windows::UI::Xaml::DependencyObject^ dependencyObject);
-        void DisconnectUnloadedObject(int connectionId);
-    
-    private:
         bool _contentLoaded;
-    
     
     };
 }

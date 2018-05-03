@@ -8,7 +8,7 @@
 
 #include "XamlTypeInfo.g.h"
 
-namespace GraphEditor3b
+namespace GraphEditor3b2
 {
     partial ref class App :  public ::Windows::UI::Xaml::Application,
         public ::Windows::UI::Xaml::Markup::IXamlMetadataProvider

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{e063d26c-68cc-49d7-b712-91294897f4a4}</ProjectGuid>
-    <RootNamespace>GraphEditor3b</RootNamespace>
+    <ProjectGuid>{451a4b3a-1333-4e40-bda0-7365e2ca612c}</ProjectGuid>
+    <RootNamespace>GraphEditor3b2</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -97,7 +97,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>GraphEditor3b_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>GraphEditor3b2_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
@@ -136,6 +136,14 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\GraphEditor3b\DrawableEdge.h" />
+    <ClInclude Include="..\GraphEditor3b\DrawableGraph.h" />
+    <ClInclude Include="..\GraphEditor3b\DrawableVertex.h" />
+    <ClInclude Include="..\GraphEditor3b\DrawingContext.h" />
+    <ClInclude Include="..\GraphEditor3b\Edge.h" />
+    <ClInclude Include="..\GraphEditor3b\EdgeDirection.h" />
+    <ClInclude Include="..\GraphEditor3b\Graph.h" />
+    <ClInclude Include="..\GraphEditor3b\Vertex.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -156,7 +164,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="GraphEditor3b_TemporaryKey.pfx" />
+    <None Include="GraphEditor3b2_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +177,13 @@
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\GraphEditor3b\DrawableEdge.cpp" />
+    <ClCompile Include="..\GraphEditor3b\DrawableGraph.cpp" />
+    <ClCompile Include="..\GraphEditor3b\DrawableVertex.cpp" />
+    <ClCompile Include="..\GraphEditor3b\DrawingContext.cpp" />
+    <ClCompile Include="..\GraphEditor3b\Edge.cpp" />
+    <ClCompile Include="..\GraphEditor3b\Graph.cpp" />
+    <ClCompile Include="..\GraphEditor3b\Vertex.cpp" />
     <ClCompile Include="App.xaml.cpp">
       <DependentUpon>App.xaml</DependentUpon>
     </ClCompile>

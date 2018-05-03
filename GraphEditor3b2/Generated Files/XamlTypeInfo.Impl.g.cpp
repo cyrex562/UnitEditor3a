@@ -12,9 +12,9 @@
 
 
 // XamlMetaDataProvider
-namespace GraphEditor3b
+namespace GraphEditor3b2
 {
-    namespace GraphEditor3b_XamlTypeInfo
+    namespace GraphEditor3b2_XamlTypeInfo
     {
         [Windows::Foundation::Metadata::WebHostHidden]
         public ref class XamlMetaDataProvider sealed : public ::Windows::UI::Xaml::Markup::IXamlMetadataProvider
@@ -37,22 +37,22 @@ namespace GraphEditor3b
 }
 
 [::Windows::Foundation::Metadata::DefaultOverload]
-::Windows::UI::Xaml::Markup::IXamlType^ ::GraphEditor3b::GraphEditor3b_XamlTypeInfo::XamlMetaDataProvider::GetXamlType(::Windows::UI::Xaml::Interop::TypeName type)
+::Windows::UI::Xaml::Markup::IXamlType^ ::GraphEditor3b2::GraphEditor3b2_XamlTypeInfo::XamlMetaDataProvider::GetXamlType(::Windows::UI::Xaml::Interop::TypeName type)
 {
     return Provider->GetXamlTypeByType(type);
 }
 
-::Windows::UI::Xaml::Markup::IXamlType^ ::GraphEditor3b::GraphEditor3b_XamlTypeInfo::XamlMetaDataProvider::GetXamlType(Platform::String^ fullName)
+::Windows::UI::Xaml::Markup::IXamlType^ ::GraphEditor3b2::GraphEditor3b2_XamlTypeInfo::XamlMetaDataProvider::GetXamlType(Platform::String^ fullName)
 {
     return Provider->GetXamlTypeByName(fullName);
 }
 
-Platform::Array<::Windows::UI::Xaml::Markup::XmlnsDefinition>^ ::GraphEditor3b::GraphEditor3b_XamlTypeInfo::XamlMetaDataProvider::GetXmlnsDefinitions()
+Platform::Array<::Windows::UI::Xaml::Markup::XmlnsDefinition>^ ::GraphEditor3b2::GraphEditor3b2_XamlTypeInfo::XamlMetaDataProvider::GetXmlnsDefinitions()
 {
     return ref new Platform::Array<::Windows::UI::Xaml::Markup::XmlnsDefinition>(0);
 }
 
-::XamlTypeInfo::InfoProvider::XamlTypeInfoProvider^ ::GraphEditor3b::GraphEditor3b_XamlTypeInfo::XamlMetaDataProvider::Provider::get()
+::XamlTypeInfo::InfoProvider::XamlTypeInfoProvider^ ::GraphEditor3b2::GraphEditor3b2_XamlTypeInfo::XamlMetaDataProvider::Provider::get()
 {
     if (_provider == nullptr)
     {

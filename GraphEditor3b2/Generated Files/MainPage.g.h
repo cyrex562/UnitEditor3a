@@ -8,7 +8,7 @@
 
 
 
-namespace GraphEditor3b
+namespace GraphEditor3b2
 {
     [::Windows::Foundation::Metadata::WebHostHidden]
     partial ref class MainPage : public ::Windows::UI::Xaml::Controls::Page, 

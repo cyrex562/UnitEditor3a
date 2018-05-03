@@ -36,6 +36,7 @@
     <ClInclude Include="..\GraphEditor3b\EdgeDirection.h" />
     <ClInclude Include="..\GraphEditor3b\Graph.h" />
     <ClInclude Include="..\GraphEditor3b\Vertex.h" />
+    <ClInclude Include="defines.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">

@@ -144,6 +144,7 @@
     <ClInclude Include="..\GraphEditor3b\EdgeDirection.h" />
     <ClInclude Include="..\GraphEditor3b\Graph.h" />
     <ClInclude Include="..\GraphEditor3b\Vertex.h" />
+    <ClInclude Include="defines.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>

@@ -4,6 +4,10 @@
 using namespace Microsoft::Graphics::Canvas::Geometry;
 using namespace Microsoft::Graphics::Canvas;
 using namespace Microsoft::Graphics::Canvas::UI::Xaml;
+using namespace Platform;
+using namespace Windows::Foundation::Numerics;
+using namespace Windows::UI;
+using namespace Microsoft::Graphics::Canvas::Brushes;
 
 DrawableEdge::DrawableEdge()
 {
@@ -16,7 +20,7 @@ DrawableEdge::~DrawableEdge()
 {
 }
 
-void DrawableEdge::Draw(CanvasDrawingSession cds)
+void DrawableEdge::Draw(CanvasDrawingSession^ cds)
 {
-    cds.DrawGeometry(Line, DEF_EDGE_COLOR, DEF_EDGE_LINE_WIDTH);
+    cds->DrawGeometry(Line, DEF_EDGE_COLOR, DEF_EDGE_LINE_WIDTH);
 }

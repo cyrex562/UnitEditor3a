@@ -8,10 +8,6 @@ using namespace Windows::Foundation::Numerics;
 using namespace Windows::UI;
 using namespace Microsoft::Graphics::Canvas::Brushes;
 
-
-#define DEF_EDGE_COLOR Colors.Black
-#define DEF_EDGE_LINE_WIDTH 3
-
 ref class DrawableEdge
 {
 public:
@@ -24,6 +20,6 @@ public:
     Guid TailVertexId;
     Guid EdgeId;
     CanvasGeometry Line;
-    void Draw(CanvasDrawingSession cds);
+    void Draw(CanvasDrawingSession^ cds);
 };
 

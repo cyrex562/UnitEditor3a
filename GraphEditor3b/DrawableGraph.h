@@ -1,6 +1,10 @@
 #pragma once
-#include <DrawableEdge.h>
-#include <DrawableVertex.h>
+#include "DrawableEdge.h"
+#include "DrawableVertex.h"
+
+#include "defines.h"
+
+#include <random>
 
 using namespace Microsoft::Graphics::Canvas;
 using namespace Microsoft::Graphics::Canvas::Geometry;
@@ -9,7 +13,6 @@ using namespace Platform;
 using namespace Windows::Foundation::Numerics;
 using namespace Platform::Collections;
 using namespace Windows::Foundation::Collections;
-
 
 
 ref class DrawableGraph
@@ -22,10 +25,8 @@ public:
     Map<Guid, DrawableVertex^>^ DrawableVertices;
     Map<Guid, DrawableEdge^>^ DrawableEdges;
 
-    void DrawGraph(CanvasDrawingSession cds) {
-        for (auto dvkp : DrawableVertices) {
-            dvkp->Value->Draw
-        }
-    }
+    void Draw(CanvasDrawingSession^ cds);
+
+    static DrawableGraph LayoutGraphRandom(CanvasControl^ canvas, boolean fitGraphToView);
 };
 

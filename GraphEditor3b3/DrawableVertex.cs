@@ -33,6 +33,7 @@ namespace GraphEditor3b3
         {
             this.Position = Vector2.Zero;
             this.VertexId = Guid.NewGuid();
+            this.Circle = null;
         }
 
         /// <summary>

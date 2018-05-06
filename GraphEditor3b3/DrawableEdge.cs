@@ -51,7 +51,9 @@ namespace GraphEditor3b3
 
         public void Draw(CanvasDrawingSession cds)
         {
+#pragma warning disable IDE0022 // Use expression body for methods
             cds.DrawGeometry(this.Line, Defines.DEFAULT_NODE_COLOR, Defines.NODE_LINE_WIDTH);
+#pragma warning restore IDE0022 // Use expression body for methods
         }
     }
 }

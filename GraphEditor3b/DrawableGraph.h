@@ -27,6 +27,6 @@ public:
 
     void Draw(CanvasDrawingSession^ cds);
 
-    static DrawableGraph LayoutGraphRandom(CanvasControl^ canvas, boolean fitGraphToView);
+    static DrawableGraph LayoutGraphRandom(CanvasControl^ canvas, boolean fitGraphToView, Graph^ graph);
 };
 

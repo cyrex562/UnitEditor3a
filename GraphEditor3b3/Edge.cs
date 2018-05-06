@@ -11,7 +11,7 @@ namespace GraphEditor3b3
         [DataMember]
         public Guid TailVertexId { get; set; }
         [DataMember]
-        public int Value;
+        public Int32 Value;
         [DataMember]
         public EdgeDirection Direction { get; set; }
         [DataMember]

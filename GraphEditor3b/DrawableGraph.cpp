@@ -14,6 +14,8 @@ using namespace Platform;
 using namespace Windows::Foundation::Numerics;
 using namespace Platform::Collections;
 using namespace Windows::Foundation::Collections;
+using namespace System;
+
 
 DrawableGraph::DrawableGraph()
 {
@@ -36,7 +38,7 @@ void DrawableGraph::Draw(CanvasDrawingSession^ cds) {
     }
 }
 
-DrawableGraph DrawableGraph::LayoutGraphRandom(CanvasControl ^ canvas, boolean fitGraphToView, Graph^ graph)
+DrawableGraph DrawableGraph::LayoutGraphRandom(CanvasControl ^ canvas, boolean fitGraphToView, Graph^ graph, Random^ random)
 {
     DrawableGraph^ dg = ref new DrawableGraph();
     
@@ -52,8 +54,10 @@ DrawableGraph DrawableGraph::LayoutGraphRandom(CanvasControl ^ canvas, boolean f
         }
         else {
             maxX = VERTEX_SIZE * (graph->Vertices->Size + MAX_VERT_SPACE);
-
+            maxY = VERTEX_SIZE * (graph->Vertices->Size + MAX_VERT_SPACE);
         }
+
+        float2 circlePos = new float2(random->)
     }
 
     return dg;

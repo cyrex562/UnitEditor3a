@@ -13,16 +13,14 @@ namespace GraphEditor3b3
     public class Graph
     {
         [DataMember]
-        public Guid GraphId {get;set;}
+        public Guid GraphId { get; set; }
         [DataMember]
-        public Dictionary<Guid, Vertex> Vertices { get; set;  }
+        public Dictionary<Guid, Vertex> Vertices { get; set; }
         [DataMember]
-        public Dictionary<Guid, Edge> Edges { get; set;  }
-
+        public Dictionary<Guid, Edge> Edges { get; set; }
         // adjacent matrix: a 2-D matrix in which the rows represent source vertices and columns represent dest vertices
         [DataMember]
-        public Dictionary<Guid, List<Guid>> AdjacencyMatrix { get; set;  }
-
+        public Dictionary<Guid, List<Guid>> AdjacencyMatrix { get; set; }
         // incidence matrix: a 2-D boolean matrix in which the rows represent vertices and columns represent edges.
         // List of edges for a given Vertex ID
         [DataMember]
@@ -41,11 +39,12 @@ namespace GraphEditor3b3
             this.IncidenceMatrix = new Dictionary<Guid, List<Guid>>();
         }
 
-        //public int VertexCount => this.Vertices.Count;
-
-        //public int EdgeCount => this.Edges.Count;
-
-        // adjacent: whether there is an edge from vertex x to vertex y
+        /// <summary>
+        /// adjacent: whether there is an edge from vertex x to vertex y
+        /// </summary>
+        /// <param name="headVertexId"></param>
+        /// <param name="tailVertexId"></param>
+        /// <returns></returns>
         public Boolean Adjacent(Guid headVertexId, Guid tailVertexId)
         {
             if (this.Vertices.ContainsKey(headVertexId) == false)
@@ -54,7 +53,7 @@ namespace GraphEditor3b3
             }
 
             Vertex uv = this.Vertices[headVertexId];
-          
+
             foreach (Guid neighId in uv.Neighbors)
             {
                 if (neighId == tailVertexId)
@@ -65,18 +64,30 @@ namespace GraphEditor3b3
 
             return false;
         }
-        
-        // neighbors: list all neighbors of a given vertex.
+
+        /// <summary>
+        /// neighbors: list all neighbors of a given vertex.
+        /// </summary>
+        /// <param name="vertexId"></param>
+        /// <returns></returns>
         public List<Guid> Neighbors(Guid vertexId)
         {
             Vertex uv = this.Vertices[vertexId];
             return uv.Neighbors;
         }
 
-        // check for the existence of a vertex with a given ID
+        /// <summary>
+        /// check for the existence of a vertex with a given ID
+        /// </summary>
+        /// <param name="nodeId"></param>
+        /// <returns></returns>
         public Boolean VertexExists(Guid nodeId) => this.Vertices.ContainsKey(nodeId);
 
-        // Add a vertex
+        /// <summary>
+        /// Add a vertex
+        /// </summary>
+        /// <param name="vertexToAdd"></param>
+        /// <returns></returns>
         public Boolean AddVertex(Vertex vertexToAdd)
         {
             if (VertexExists(vertexToAdd.VertexId) == true)
@@ -90,7 +101,9 @@ namespace GraphEditor3b3
             return true;
         }
 
-        // Remove a vertex
+        /// <summary>
+        /// Remove a vertex
+        /// </summary>
         public Boolean RemoveVertex(Guid vertexToRemove)
         {
             if (!VertexExists(vertexToRemove))
@@ -102,7 +115,11 @@ namespace GraphEditor3b3
             return true;
         }
 
-        // Add an edge
+        /// <summary>
+        /// Add an edge
+        /// </summary>
+        /// <param name="edgeToAdd"></param>
+        /// <returns></returns>
         public Boolean AddEdge(Edge edgeToAdd)
         {
             if (this.Edges.ContainsKey(edgeToAdd.EdgeId))
@@ -117,7 +134,11 @@ namespace GraphEditor3b3
             return true;
         }
 
-        // Remove an edge
+        /// <summary>
+        /// Remove an edge
+        /// </summary>
+        /// <param name="edgeToRemove"></param>
+        /// <returns></returns>
         public Boolean RemoveEdge(Guid edgeToRemove)
         {
             Edge ue = this.Edges[edgeToRemove];
@@ -135,7 +156,11 @@ namespace GraphEditor3b3
             return true;
         }
 
-        // Get a vertexes' value
+        /// <summary>
+        /// Get a vertexes' value
+        /// </summary>
+        /// <param name="vertexId"></param>
+        /// <returns></returns>
         public Int32 GetVertexValue(Guid vertexId)
         {
             if (!this.VertexExists(vertexId))
@@ -145,7 +170,12 @@ namespace GraphEditor3b3
             return this.Vertices[vertexId].Value;
         }
 
-        // Set a vertexe's value
+        /// <summary>
+        /// Set a vertexe's value
+        /// </summary>
+        /// <param name="vertexId"></param>
+        /// <param name="newValue"></param>
+        /// <returns></returns>
         public Boolean SetVertexValue(Guid vertexId, Int32 newValue)
         {
             if (!this.VertexExists(vertexId))
@@ -157,7 +187,11 @@ namespace GraphEditor3b3
             return true;
         }
 
-        // Get an edge's value
+        /// <summary>
+        /// Get an edge's value
+        /// </summary>
+        /// <param name="edgeId"></param>
+        /// <returns></returns>
         public Int32 GetEdgeValue(Guid edgeId)
         {
             if (!this.Edges.ContainsKey(edgeId))
@@ -167,7 +201,12 @@ namespace GraphEditor3b3
             return this.Edges[edgeId].Value;
         }
 
-        // Set an edge's value
+        /// <summary>
+        /// Set an edge's value
+        /// </summary>
+        /// <param name="edgeId"></param>
+        /// <param name="newValue"></param>
+        /// <returns></returns>
         public Boolean SetEdgeValue(Guid edgeId, Int32 newValue)
         {
             if (!this.Edges.ContainsKey(edgeId))
@@ -178,18 +217,21 @@ namespace GraphEditor3b3
             return true;
         }
 
-        public static Graph GenerateRandomGraph(AppContext appContext)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="appContext"></param>
+        /// <returns></returns>
+        public static Graph GenerateRandomGraph(Random rng)
         {
-            Int32 numNodes = appContext.RandomSource.Next(Defines.MIN_NUM_NODES, Defines.MAX_NUM_NODES);
-            //appContext.CurrentGraph = new UGraph();
+            Int32 numNodes = rng.Next(Defines.MIN_NUM_NODES, Defines.MAX_NUM_NODES);
             Graph outGraph = new Graph();
-            //appContext.CurrentGraphState = GraphState.New;
-
+            
             for (Int32 i = 0; i < numNodes; i++)
             {
                 Vertex uv = new Vertex
                 {
-                    Value = appContext.RandomSource.Next()
+                    Value = rng.Next()
                 };
                 outGraph.AddVertex(uv);
             }
@@ -200,14 +242,14 @@ namespace GraphEditor3b3
                 {
                     if (kvp1.Value.VertexId != kvp2.Value.VertexId)
                     {
-                        Int32 prob = appContext.RandomSource.Next(1, 10);
+                        Int32 prob = rng.Next(1, 10);
                         if (prob >= Defines.EDGE_PROBABILITY * 10)
                         {
                             Edge ue = new Edge
                             {
                                 HeadVertexId = kvp1.Value.VertexId,
                                 TailVertexId = kvp2.Value.VertexId,
-                                Value = appContext.RandomSource.Next()
+                                Value = rng.Next()
                             };
                             outGraph.Edges.Add(ue.EdgeId, ue);
                             kvp1.Value.AddNeighbor(kvp2.Value.VertexId);
@@ -217,7 +259,6 @@ namespace GraphEditor3b3
 
                         }
                     }
-
                 }
             }
 
@@ -244,3 +285,4 @@ namespace GraphEditor3b3
             return loadedGraph;
         }
     }
+}

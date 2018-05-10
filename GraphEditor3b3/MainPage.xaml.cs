@@ -22,9 +22,35 @@ namespace GraphEditor3b3
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        Graph graph;
+        DrawableGraph drawableGraph;
+        Random rng;
         public MainPage()
         {
             this.InitializeComponent();
+
+            rng = new Random();
+
+            
+        }
+
+        private void CanvasControl_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
+        {
+            drawableGraph.Draw(args.DrawingSession);
+        }
+
+        private void MyCanvas_CreateResources(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
+        {
+            // Generate a random graph
+            graph = Graph.GenerateRandomGraph(rng);
+            drawableGraph = DrawableGraph.LayoutDGraphRandom(true, rng, MyCanvas, graph);
+        }
+
+        private void generateBtn_Click(Object sender, RoutedEventArgs e)
+        {
+            graph = Graph.GenerateRandomGraph(rng);
+            drawableGraph = DrawableGraph.LayoutDGraphRandom(true, rng, MyCanvas, graph);
+            MyCanvas.Invalidate();
         }
     }
 }

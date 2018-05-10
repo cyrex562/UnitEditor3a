@@ -5,9 +5,26 @@
     xmlns:local="using:GraphEditor3b3"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Background="DarkGray">
+            <Button x:Name="generateBtn" 
+                    Content="Generate" 
+                    Width="Auto" 
+                    Background="Blue"
+                    Click="generateBtn_Click"/>
+        </StackPanel>
+        <canvas:CanvasControl x:Name="MyCanvas"
+                              Grid.Row="0" 
+                              Grid.Column="1" 
+                              Draw="CanvasControl_Draw" 
+                              ClearColor="Black"
+                              CreateResources="MyCanvas_CreateResources"/>
     </Grid>
 </Page>

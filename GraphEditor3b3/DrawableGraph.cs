@@ -11,10 +11,15 @@ namespace GraphEditor3b3
     {
         public Dictionary<Guid, DrawableVertex> DrawableVertices { get; set; }
         public Dictionary<Guid, DrawableEdge> DrawableEdges { get; set; }
+        public DrawableGraphLayout Layout { get; set; }
+        public Boolean FitToView { get; set; }
+
         public DrawableGraph()
         {
             this.DrawableVertices = new Dictionary<Guid, DrawableVertex>();
             this.DrawableEdges = new Dictionary<Guid, DrawableEdge>();
+            this.Layout = DrawableGraphLayout.None;
+            this.FitToView = true;
         }
 
         public void Draw(CanvasDrawingSession cds)
@@ -27,6 +32,14 @@ namespace GraphEditor3b3
             foreach (KeyValuePair<Guid, DrawableEdge> kvp in this.DrawableEdges)
             {
                 kvp.Value.Draw(cds);
+            }
+        }
+
+        public void Relayout()
+        {
+            if (this.Layout == DrawableGraphLayout.Random)
+            {
+
             }
         }
 
@@ -52,6 +65,8 @@ namespace GraphEditor3b3
             //Dictionary<Guid, DrawableVertex> dVerts;
             //Dictionary<Guid, DrawableEdge> dEdges;
             DrawableGraph dg = new DrawableGraph();
+            dg.Layout = DrawableGraphLayout.Random;
+            dg.FitToView = fitGraphToView;
 
             foreach (KeyValuePair<Guid, Vertex> kvp in graph.Vertices)
             {
@@ -61,8 +76,8 @@ namespace GraphEditor3b3
                 Int32 max_y = 0;
                 if (fitGraphToView == true)
                 {
-                    max_x = (Int32)canvas.ActualWidth - Defines.VERTEX_SIZE;
-                    max_y = (Int32)canvas.ActualHeight - Defines.VERTEX_SIZE;
+                    max_x = (Int32)canvas.ActualWidth - Defines.VERTEX_SIZE - Defines.MAX_VERTEX_SPACE;
+                    max_y = (Int32)canvas.ActualHeight - Defines.VERTEX_SIZE - Defines.MAX_VERTEX_SPACE;
                 }
                 else
                 {

@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/GraphEditor3b/Generated Files/App.g.hpp
+/GraphEditor3b/Generated Files

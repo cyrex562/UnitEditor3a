@@ -222,9 +222,13 @@ namespace GraphEditor3b3
         /// </summary>
         /// <param name="appContext"></param>
         /// <returns></returns>
-        public static Graph GenerateRandomGraph(Random rng)
+        public static Graph GenerateRandomGraph(
+            Random rng,
+            int minNumVerts,
+            int maxNumVerts,
+            double edgeProb)
         {
-            Int32 numNodes = rng.Next(Defines.MIN_NUM_NODES, Defines.MAX_NUM_NODES);
+            Int32 numNodes = rng.Next(minNumVerts, maxNumVerts);
             Graph outGraph = new Graph();
             
             for (Int32 i = 0; i < numNodes; i++)
@@ -243,7 +247,7 @@ namespace GraphEditor3b3
                     if (kvp1.Value.VertexId != kvp2.Value.VertexId)
                     {
                         Int32 prob = rng.Next(1, 10);
-                        if (prob >= Defines.EDGE_PROBABILITY * 10)
+                        if (prob >= edgeProb * 10)
                         {
                             Edge ue = new Edge
                             {
@@ -266,6 +270,11 @@ namespace GraphEditor3b3
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="graph"></param>
+        /// <returns></returns>
         public static String GraphToJson(Graph graph)
         {
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Graph));
@@ -276,6 +285,11 @@ namespace GraphEditor3b3
             return jsonString;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="graphString"></param>
+        /// <returns></returns>
         public static Graph JsonToGraph(String graphString)
         {
             Graph loadedGraph = new Graph();

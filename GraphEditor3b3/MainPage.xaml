@@ -13,14 +13,79 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="0" Background="DarkGray">
-            <Button x:Name="generateBtn" 
-                    Content="Generate" 
-                    Width="Auto" 
-                    Background="Blue"
-                    Click="generateBtn_Click"/>
-        </StackPanel>
-        <canvas:CanvasControl x:Name="MyCanvas"
+        <Grid Grid.Row="0" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Grid.Column="0" Background="DarkGray" Margin="5">
+                <!--<TextBlock Text="Min # of Vertices"/>-->
+                <Slider x:Name="MinVertSlider" Header="Min # of Vertices" ValueChanged="MinVertSLider_ValueChanged" Maximum="1024" Minimum="1" StepFrequency="1"/>
+                <!--<TextBlock Text="Max # of Vertices"/>-->
+                <Slider x:Name="MaxVertSlider" Header="Max # of Vertices" ValueChanged="MaxVertSlider_ValueChanged" Maximum="1024" Minimum="1"  StepFrequency="1"/>
+                <!--<TextBlock Text="Edge Probability"/>-->
+                <Slider x:Name="EdgeProbSlider" Header="Edge Probability" ValueChanged="EdgeProbSlider_ValueChanged" Maximum="1.0" Minimum="0.01" StepFrequency="0.01"/>
+                <Button x:Name="generateBtn" 
+                    Content="Generate Random Graph" 
+                    Background="Orange"
+                    Click="GenerateBtn_Click"
+                    HorizontalAlignment="Stretch"/>
+                <Button x:Name="ClearGraphBtn" 
+                        Content="Clear Graph"
+                        Click="ClearGraphBtn_Click"
+                        HorizontalAlignment="Stretch"
+                        Background="Orange"/>
+                <TextBlock Text="Graph Layout"
+                           Margin="0,10,0,0"/>
+                <ComboBox x:Name="LayoutComboBox"
+                          HorizontalAlignment="Stretch">
+                    <ComboBoxItem></ComboBoxItem>
+                    <ComboBoxItem>Random</ComboBoxItem>
+                </ComboBox>
+                <CheckBox x:Name="FitToViewCheckBox"
+                          Content="Fit To View"
+                          Checked="FitToViewCheckBox_Checked"
+                          Unchecked="FitToViewCheckBox_Unchecked"
+                          IsChecked="True"/>
+                <Button x:Name="LayoutGraphBtn"
+                    Content="Layout Graph"
+                    Background="Yellow"
+                    Click="LayoutGraphBtn_Click"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,20"/>
+                <Button x:Name="SaveGraphBtn"
+                    Content="Save Graph to File"
+                    Background="Green"
+                    Click="SaveGraphBtn_Click"
+                    HorizontalAlignment="Stretch"/>
+                <Button x:Name="LoadGraphBtn"
+                    Content="Load Graph from File"
+                    Background="Orange"
+                    Click="LoadGraphBtn_Click"
+                    HorizontalAlignment="Stretch"/>
+            </StackPanel>
+            <Grid Grid.Row="1"
+                  Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="VertexCountTxtBlock"
+                           Grid.Row="0"
+                           HorizontalAlignment="Stretch"/>
+                <TextBlock x:Name="EdgeCountTxtBlock"
+                           Grid.Row="1"
+                           HorizontalAlignment="Stretch"/>
+            </Grid>
+            <Border Background="Black"
+                    Margin="5"
+                    Grid.Row="2">
+                <TextBlock x:Name="StatusTextBlock"
+                           Foreground="Green"/>
+            </Border>
+        </Grid>
+        <canvas:CanvasControl x:Name="MainCanvas"
                               Grid.Row="0" 
                               Grid.Column="1" 
                               Draw="CanvasControl_Draw" 

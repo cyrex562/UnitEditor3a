@@ -7,39 +7,14 @@ namespace GraphEditor3b3
 {
     public class DrawableEdge
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public Vector2 HeadPosition { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public Vector2 TailPosition { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public Guid HeadVertexId { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public Guid TailVertexId { get; set;}
-
-        /// <summary>
-        /// 
-        /// </summary>
         public Guid EdgeId { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public CanvasGeometry Line { get; set; }
+        public Boolean Selected { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public DrawableEdge()
         {
             this.HeadPosition = Vector2.Zero;
@@ -47,13 +22,32 @@ namespace GraphEditor3b3
             this.HeadVertexId = Guid.Empty;
             this.TailVertexId = Guid.Empty;
             this.EdgeId = Guid.Empty;
+            this.Selected = false;
         }
 
         public void Draw(CanvasDrawingSession cds)
         {
-#pragma warning disable IDE0022 // Use expression body for methods
-            cds.DrawGeometry(this.Line, Defines.DEFAULT_NODE_COLOR, Defines.NODE_LINE_WIDTH);
-#pragma warning restore IDE0022 // Use expression body for methods
+            if (this.Selected)
+            {
+                cds.DrawGeometry(this.Line, Defines.SEL_EDGE_COLOR, Defines.DEF_EDGE_LINE_WIDTH);
+            }
+            else
+            {
+                cds.DrawGeometry(this.Line, Defines.DEF_EDGE_COLOR, Defines.DEF_EDGE_LINE_WIDTH);
+            }
+            
+        }
+
+        public void ToggleSelect()
+        {
+            if (this.Selected)
+            {
+                this.Selected = false;
+            }
+            else
+            {
+                this.Selected = true;
+            }
         }
     }
 }

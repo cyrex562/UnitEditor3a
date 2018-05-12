@@ -10,8 +10,8 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="8*"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.RowDefinitions>
@@ -64,6 +64,34 @@
                     Background="Orange"
                     Click="LoadGraphBtn_Click"
                     HorizontalAlignment="Stretch"/>
+                <TextBlock Text="Vertices" FontWeight="Bold"/>
+                <ListView x:Name="VertexList" 
+                          ItemsSource="{x:Bind observableVertices}"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                          ScrollViewer.VerticalScrollMode="Enabled"
+                          Height="120"
+                          Margin="0,20,0,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="local:Vertex">
+                            <TextBlock Text="{x:Bind ListItemText}"
+                                       TextWrapping="Wrap"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <TextBlock Text="Edges" FontWeight="Bold"/>
+                <ListView x:Name="EdgeList" 
+                          ItemsSource="{x:Bind observableEdges}"
+                          ScrollViewer.VerticalScrollBarVisibility="Visible"
+                          ScrollViewer.VerticalScrollMode="Enabled"
+                          Height="120"
+                          Margin="0,0,0,20">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="local:Edge">
+                            <TextBlock Text="{x:Bind ListItemText}"
+                                       TextWrapping="Wrap"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </StackPanel>
             <Grid Grid.Row="1"
                   Margin="5">
@@ -90,6 +118,7 @@
                               Grid.Column="1" 
                               Draw="CanvasControl_Draw" 
                               ClearColor="Black"
-                              CreateResources="MyCanvas_CreateResources"/>
+                              CreateResources="MyCanvas_CreateResources"
+                              PointerPressed="CanvasPointerPressed"/>
     </Grid>
 </Page>

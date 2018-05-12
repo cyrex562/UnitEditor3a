@@ -71,5 +71,13 @@ namespace GraphEditor3b3
 
             return false;
         }
-    }
-}
+
+        public String ListItemText
+        {
+            get
+            {
+                return String.Format("{0}: {1}", this.VertexId, this.Value);
+            }
+        }
+    } // end of class
+} // end of namepsace

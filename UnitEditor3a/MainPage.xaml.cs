@@ -263,7 +263,7 @@ namespace UnitEditor3a
         private async void LoadGraphFromFile(Windows.Storage.StorageFile file)
         {
             Windows.Storage.CachedFileManager.DeferUpdates(file);
-            string jsonString = await Windows.Storage.FileIO.ReadTextAsync(file);
+            String jsonString = await Windows.Storage.FileIO.ReadTextAsync(file);
             Windows.Storage.Provider.FileUpdateStatus status = await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
             if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
             {

@@ -76,13 +76,13 @@ namespace GraphEditor3b3
                 Int32 max_y = 0;
                 if (fitGraphToView == true)
                 {
-                    max_x = (Int32)canvas.ActualWidth - Defines.VERTEX_SIZE - Defines.MAX_VERTEX_SPACE;
-                    max_y = (Int32)canvas.ActualHeight - Defines.VERTEX_SIZE - Defines.MAX_VERTEX_SPACE;
+                    max_x = (Int32)canvas.ActualWidth - Defines.VERTEX_SIZE - Defines.MAX_VERT_SPACE;
+                    max_y = (Int32)canvas.ActualHeight - Defines.VERTEX_SIZE - Defines.MAX_VERT_SPACE;
                 }
                 else
                 {
-                    max_x = Defines.VERTEX_SIZE * (graph.Vertices.Count + Defines.MAX_VERTEX_SPACE);
-                    max_y = Defines.VERTEX_SIZE * (graph.Vertices.Count + Defines.MAX_VERTEX_SPACE);
+                    max_x = Defines.VERTEX_SIZE * (graph.Vertices.Count + Defines.MAX_VERT_SPACE);
+                    max_y = Defines.VERTEX_SIZE * (graph.Vertices.Count + Defines.MAX_VERT_SPACE);
                 }
 
                 Vector2 circlePos = new Vector2(rng.Next(min_x, max_x), rng.Next(min_y, max_y));

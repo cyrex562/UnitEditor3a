@@ -1,6 +1,8 @@
 ﻿using Microsoft.Graphics.Canvas.Text;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -15,8 +17,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
-
 namespace GraphEditor3b3
 {
     /// <summary>
@@ -27,9 +27,11 @@ namespace GraphEditor3b3
         Graph currentGraph;
         DrawableGraph drawableGraph;
         Random rng;
-        int minVertices;
-        int maxVertices;
-        double edgeProbability;
+        Int32 minVertices;
+        Int32 maxVertices;
+        Double edgeProbability;
+        ObservableCollection<Vertex> observableVertices;
+        ObservableCollection<Edge> observableEdges;
 
         public MainPage()
         {
@@ -37,19 +39,37 @@ namespace GraphEditor3b3
             this.rng = new Random();
             SetCurrentGraph(null);
             this.drawableGraph = null;
-            this.minVertices = Defines.MIN_NUM_NODES;
-            this.maxVertices = Defines.MAX_NUM_NODES;
+            this.minVertices = Defines.MIN_NUM_VERTS;
+            this.maxVertices = Defines.MAX_NUM_VERTS;
             this.edgeProbability = Defines.EDGE_PROBABILITY;
+            MinVertSlider.Minimum = Defines.MIN_NUM_VERTS;
+            MinVertSlider.Maximum = Defines.MAX_NUM_VERTS;
+            MaxVertSlider.Minimum = Defines.MIN_NUM_VERTS;
+            MaxVertSlider.Maximum = Defines.MAX_NUM_VERTS;
             MinVertSlider.Value = this.minVertices;
             MaxVertSlider.Value = this.maxVertices;
             EdgeProbSlider.Value = this.edgeProbability;
+            this.observableVertices = new ObservableCollection<Vertex>();
+            this.observableEdges = new ObservableCollection<Edge>();
         }
 
         private void SetCurrentGraph(Graph inGraph)
         {
-            this.currentGraph = inGraph;
             if (inGraph != null)
             {
+                this.observableEdges.Clear();
+                this.observableVertices.Clear();
+                this.currentGraph = inGraph;
+                foreach(KeyValuePair<Guid, Vertex> kvp in inGraph.Vertices) {
+                    this.observableVertices.Add(kvp.Value);
+                }
+                foreach(KeyValuePair<Guid, Edge> kvp in inGraph.Edges)
+                {
+                    this.observableEdges.Add(kvp.Value);
+                }
+                this.currentGraph.EdgesChanged += EdgesChanged;
+                this.currentGraph.VerticesChanged += VerticesChanged;
+
                 this.VertexCountTxtBlock.Text = String.Format("# Of Vertices: {0}", this.currentGraph.Vertices.Count);
                 this.EdgeCountTxtBlock.Text = String.Format("# of Edges: {0}", this.currentGraph.Edges.Count);
             } else
@@ -72,8 +92,8 @@ namespace GraphEditor3b3
                 this.drawableGraph.Draw(args.DrawingSession);
             } else
             {
-                float x = (float)(this.MainCanvas.ActualWidth / 2);
-                float y = (float)(this.MainCanvas.ActualHeight / 2);
+                Single x = (Single)(this.MainCanvas.ActualWidth / 2);
+                Single y = (Single)(this.MainCanvas.ActualHeight / 2);
 
                 CanvasTextFormat format = new CanvasTextFormat
                 {
@@ -83,8 +103,8 @@ namespace GraphEditor3b3
 
                 CanvasTextLayout textLayout = new CanvasTextLayout(ds, "Nothing to see here.", format, 0.0f, 0.0f);
                 var bounds = textLayout.LayoutBounds;
-                float newX = x - (float)(bounds.Width / 2);
-                float newY = y - (float)(bounds.Height / 2);
+                Single newX = x - (Single)(bounds.Width / 2);
+                Single newY = y - (Single)(bounds.Height / 2);
 
                 ds.DrawTextLayout(textLayout, newX, newY, Colors.White);
 
@@ -108,6 +128,7 @@ namespace GraphEditor3b3
             this.drawableGraph.Layout = DrawableGraphLayout.Random;
             this.drawableGraph.FitToView = true;
             this.MainCanvas.Invalidate();
+
         }
 
         /// <summary>
@@ -148,15 +169,14 @@ namespace GraphEditor3b3
         private async void LoadGraphFromFile(Windows.Storage.StorageFile file)
         {
             Windows.Storage.CachedFileManager.DeferUpdates(file);
-            string jsonString = await Windows.Storage.FileIO.ReadTextAsync(file);
+            String jsonString = await Windows.Storage.FileIO.ReadTextAsync(file);
             Windows.Storage.Provider.FileUpdateStatus status = await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
             if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
             {
                 this.StatusTextBlock.Text = string.Format("file {0} read", file.Name);
 
                 Graph loadedGraph = Graph.JsonToGraph(jsonString);
-                //ms.Close();
-                //this.currentGraph = loadedGraph;
+
                 SetCurrentGraph(loadedGraph);
                 // TODO: fire event to update graph;
                 this.drawableGraph = DrawableGraph.LayoutDGraphRandom(true, this.rng, this.MainCanvas, this.currentGraph);
@@ -228,7 +248,7 @@ namespace GraphEditor3b3
 
         private void MinVertSLider_ValueChanged(Object sender, RangeBaseValueChangedEventArgs e)
         {
-            this.minVertices = (int)e.NewValue;
+            this.minVertices = (Int32)e.NewValue;
             if (this.minVertices > this.maxVertices)
             {
                 this.maxVertices += 1;
@@ -242,7 +262,7 @@ namespace GraphEditor3b3
 
         private void MaxVertSlider_ValueChanged(Object sender, RangeBaseValueChangedEventArgs e)
         {
-            this.maxVertices = (int)e.NewValue;
+            this.maxVertices = (Int32)e.NewValue;
             if (this.maxVertices < this.minVertices)
             {
                 this.minVertices -= 1;
@@ -257,5 +277,131 @@ namespace GraphEditor3b3
         {
             this.edgeProbability = e.NewValue;
         }
-    }
-}
+
+        private void CanvasPointerMoved(
+            Object sender,
+            PointerRoutedEventArgs e)
+        {
+            Windows.UI.Xaml.Input.Pointer ptr = e.Pointer;
+            if (ptr.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+            {
+                // get extended pointer details
+                //Windows.UI.Input.PointerPoint ptrPoint = e.GetCurrentPoint(MainCanvas);
+                //Point ptrPos = ptrPoint.Position;
+                //if (ptrPoint.Properties.IsLeftButtonPressed)
+                //{
+                //    Debug.WriteLine(String.Format("left mouse button: {0}", ptrPoint.PointerId));
+                //    foreach (KeyValuePair<Guid, DrawableVertex> kvp in this.drawableGraph.DrawableVertices)
+                //    {
+                //        Rect bounds = kvp.Value.Circle.ComputeBounds();
+                //    }
+                //}
+            }
+        }
+
+        private void CanvasPointerPressed(
+            Object sender,
+            PointerRoutedEventArgs e)
+        {
+            Windows.UI.Xaml.Input.Pointer ptr = e.Pointer;
+            if (ptr.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+            {
+                Windows.UI.Input.PointerPoint pointerPoint = e.GetCurrentPoint(this.MainCanvas);
+                Point pointerPosition = pointerPoint.Position;
+                String mouseButton = "";
+
+                if (pointerPoint.Properties.IsLeftButtonPressed)
+                {
+                    mouseButton = "Left";
+                }
+                else if (pointerPoint.Properties.IsRightButtonPressed)
+                {
+                    mouseButton = "Right";
+                } 
+                else if (pointerPoint.Properties.IsMiddleButtonPressed)
+                {
+                    mouseButton = "Center";
+                }
+
+                Boolean shapeFound = false;
+                foreach (KeyValuePair<Guid, DrawableVertex> kvp in this.drawableGraph.DrawableVertices)
+                {
+                    Rect bounds = kvp.Value.Circle.ComputeBounds();
+                    if (bounds.Contains(pointerPosition) == true)
+                    {
+                        Debug.WriteLine("vertex clicked!");
+                        this.StatusTextBlock.Text = "Vertex clicked";
+                        kvp.Value.ToggleSelect();
+                        shapeFound = true;
+                        break;
+                    }
+                }
+
+                if (shapeFound == false)
+                {
+                    foreach (KeyValuePair<Guid, DrawableEdge> kvp in this.drawableGraph.DrawableEdges)
+                    {
+                        Rect bounds = kvp.Value.Line.ComputeBounds();
+                        if (bounds.Contains(pointerPosition) == true)
+                        {
+                            Debug.WriteLine("edge clicked!");
+                            this.StatusTextBlock.Text = "Edge clicked";
+                            kvp.Value.ToggleSelect();
+                            shapeFound = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (shapeFound == true)
+                {
+                    MainCanvas.Invalidate();
+                }
+            }
+        }
+
+        public void VerticesChanged(Object sender, VertexChangedEventArgs e)
+        {
+           if (((Graph)sender).LastVertexChange == ChangeType.Added)
+            {
+                this.observableVertices.Add(e.ChangedVertex);
+            }
+           else if (((Graph)sender).LastVertexChange == ChangeType.Modified)
+            {
+                foreach(Vertex ov in observableVertices)
+                {
+                    if (ov.VertexId == e.ChangedVertex.VertexId)
+                    {
+                        ov.Value = e.ChangedVertex.Value;
+                    }
+                }
+            }
+           else if (((Graph)sender).LastVertexChange == ChangeType.Removed)
+            {
+                observableVertices.Remove(e.ChangedVertex);
+            }
+        }
+
+        public void EdgesChanged(Object sender, EdgeChangedEventArgs e)
+        {
+            if (((Graph)sender).LastEdgeChange == ChangeType.Added)
+            {
+                this.observableEdges.Add(e.ChangedEdge);
+            }
+            else if (((Graph)sender).LastEdgeChange == ChangeType.Modified)
+            {
+                foreach(Edge oe in observableEdges)
+                {
+                    if (oe.EdgeId == e.ChangedEdge.EdgeId)
+                    {
+                        oe.Value = e.ChangedEdge.Value;
+                    }
+                }
+            }
+            else if (((Graph)sender).LastEdgeChange == ChangeType.Removed)
+            {
+                observableEdges.Remove(e.ChangedEdge);
+            }
+        }
+    } // end of class
+} // end of namespace

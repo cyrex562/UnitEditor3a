@@ -11,29 +11,16 @@ namespace GraphEditor3b3
 {
     public class DrawableVertex
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public Vector2 Position { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public Guid VertexId { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public CanvasGeometry Circle { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
+        public Boolean Selected { get; set; }
         public DrawableVertex()
         {
             this.Position = Vector2.Zero;
             this.VertexId = Guid.NewGuid();
             this.Circle = null;
+            this.Selected = false;
         }
 
         /// <summary>
@@ -47,7 +34,25 @@ namespace GraphEditor3b3
 
         public void Draw(CanvasDrawingSession cds)
         {
-            cds.DrawGeometry(this.Circle, Defines.DEFAULT_NODE_COLOR, Defines.NODE_LINE_WIDTH);
+            if (this.Selected)
+            {
+                cds.DrawGeometry(this.Circle, Defines.SEL_VERT_COLOR, Defines.VERT_LINE_WIDTH);
+            }
+            else
+            {
+                cds.DrawGeometry(this.Circle, Defines.DEF_VERT_COLOR, Defines.VERT_LINE_WIDTH);
+            }
         } 
+
+        public void ToggleSelect()
+        {
+            if (this.Selected)
+            {
+                this.Selected = false;
+            } else
+            {
+                this.Selected = true;
+            }
+        }
     }
 }

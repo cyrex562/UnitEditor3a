@@ -8,6 +8,27 @@ using System.Text;
 
 namespace GraphEditor3b3
 {
+    public enum ChangeType
+    {
+        None,
+        Added,
+        Modified,
+        Removed,
+    };
+
+    public class VertexChangedEventArgs : EventArgs
+    {
+        public Vertex ChangedVertex { get; set; }
+    }
+
+    public class EdgeChangedEventArgs : EventArgs
+    {
+        public Edge ChangedEdge { get; set; }
+    }
+
+    public delegate void VertexChangedEventHandler(Object sender, VertexChangedEventArgs e);
+    public delegate void EdgeChangedEventHandler(Object sender, EdgeChangedEventArgs e);
+
     // Graph class
     [DataContract]
     public class Graph
@@ -25,6 +46,8 @@ namespace GraphEditor3b3
         // List of edges for a given Vertex ID
         [DataMember]
         public Dictionary<Guid, List<Guid>> IncidenceMatrix { get; set; }
+        public ChangeType LastVertexChange;
+        public ChangeType LastEdgeChange;
 
         /// <summary>
         /// 
@@ -38,6 +61,27 @@ namespace GraphEditor3b3
             this.AdjacencyMatrix = new Dictionary<Guid, List<Guid>>();
             this.IncidenceMatrix = new Dictionary<Guid, List<Guid>>();
         }
+
+        protected virtual void OnVerticesChanged(VertexChangedEventArgs e)
+        {
+            VertexChangedEventHandler handler = VerticesChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        protected virtual void OnEdgesChanged(EdgeChangedEventArgs e)
+        {
+            EdgeChangedEventHandler handler = EdgesChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public event VertexChangedEventHandler VerticesChanged;
+        public event EdgeChangedEventHandler EdgesChanged;
 
         /// <summary>
         /// adjacent: whether there is an edge from vertex x to vertex y
@@ -98,6 +142,8 @@ namespace GraphEditor3b3
             this.Vertices.Add(vertexToAdd.VertexId, vertexToAdd);
             this.AdjacencyMatrix.Add(vertexToAdd.VertexId, new List<Guid>());
             this.IncidenceMatrix.Add(vertexToAdd.VertexId, new List<Guid>());
+            this.LastVertexChange = ChangeType.Added;
+            OnVerticesChanged(new VertexChangedEventArgs { ChangedVertex = vertexToAdd});
             return true;
         }
 
@@ -110,8 +156,11 @@ namespace GraphEditor3b3
             {
                 return false;
             }
+            Vertex RemovedVertex = this.Vertices[vertexToRemove];
             this.Vertices.Remove(vertexToRemove);
             this.AdjacencyMatrix.Remove(vertexToRemove);
+            this.LastVertexChange = ChangeType.Removed;
+            OnVerticesChanged(new VertexChangedEventArgs { ChangedVertex = RemovedVertex });
             return true;
         }
 
@@ -131,6 +180,8 @@ namespace GraphEditor3b3
             this.AdjacencyMatrix[edgeToAdd.TailVertexId].Add(edgeToAdd.HeadVertexId);
             this.IncidenceMatrix[edgeToAdd.HeadVertexId].Add(edgeToAdd.EdgeId);
             this.IncidenceMatrix[edgeToAdd.TailVertexId].Add(edgeToAdd.EdgeId);
+            OnEdgesChanged(new EdgeChangedEventArgs { ChangedEdge = edgeToAdd });
+            this.LastEdgeChange = ChangeType.Removed;
             return true;
         }
 
@@ -153,6 +204,8 @@ namespace GraphEditor3b3
             this.AdjacencyMatrix[tailVertexId].Remove(headVertexId);
             this.IncidenceMatrix[headVertexId].Remove(edgeToRemove);
             this.IncidenceMatrix[tailVertexId].Remove(edgeToRemove);
+            OnEdgesChanged(new EdgeChangedEventArgs { ChangedEdge = ue });
+            this.LastEdgeChange = ChangeType.Removed;
             return true;
         }
 
@@ -184,6 +237,8 @@ namespace GraphEditor3b3
             }
             Vertex uv = this.Vertices[vertexId];
             uv.Value = newValue;
+            OnVerticesChanged(new VertexChangedEventArgs { ChangedVertex = uv});
+            this.LastVertexChange = ChangeType.Modified;
             return true;
         }
 
@@ -214,6 +269,8 @@ namespace GraphEditor3b3
                 return false;
             }
             this.Edges[edgeId].Value = newValue;
+            OnEdgesChanged(new EdgeChangedEventArgs { ChangedEdge = this.Edges[edgeId] });
+            this.LastEdgeChange = ChangeType.Modified;
             return true;
         }
 
@@ -224,9 +281,9 @@ namespace GraphEditor3b3
         /// <returns></returns>
         public static Graph GenerateRandomGraph(
             Random rng,
-            int minNumVerts,
-            int maxNumVerts,
-            double edgeProb)
+            Int32 minNumVerts,
+            Int32 maxNumVerts,
+            Double edgeProb)
         {
             Int32 numNodes = rng.Next(minNumVerts, maxNumVerts);
             Graph outGraph = new Graph();

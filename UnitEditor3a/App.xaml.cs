@@ -83,7 +83,7 @@ namespace UnitEditor3a
         /// </summary>
         /// <param name="sender">The Frame which failed navigation</param>
         /// <param name="e">Details about the navigation failure</param>
-        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        void OnNavigationFailed(Object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
@@ -95,7 +95,7 @@ namespace UnitEditor3a
         /// </summary>
         /// <param name="sender">The source of the suspend request.</param>
         /// <param name="e">Details about the suspend request.</param>
-        private void OnSuspending(object sender, SuspendingEventArgs e)
+        private void OnSuspending(Object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity

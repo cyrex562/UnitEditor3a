@@ -11,7 +11,7 @@ namespace UnitEditor3a
         [DataMember]
         public Guid TailVertexId { get; set; }
         [DataMember]
-        public int Value;
+        public Int32 Value;
         [DataMember]
         public EdgeDirection Direction { get; set; }
         [DataMember]

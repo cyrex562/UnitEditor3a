@@ -25,5 +25,13 @@ namespace GraphEditor3b3
             this.Direction = EdgeDirection.None;
             this.EdgeId = Guid.NewGuid();
         }
+
+        public String ListItemText
+        {
+            get
+            {
+                return String.Format("{0}: {1} -- {2}: {3}", EdgeId, HeadVertexId, TailVertexId, Value);
+            }
+        }
     }
 }

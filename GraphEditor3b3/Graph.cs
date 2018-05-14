@@ -23,11 +23,13 @@ namespace GraphEditor3b3
     public class VertexChangedEventArgs : EventArgs
     {
         public GraphVertex ChangedVertex { get; set; }
+        public ChangeType ChangeType { get; set; }
     }
 
     public class EdgeChangedEventArgs : EventArgs
     {
         public GraphEdge ChangedEdge { get; set; }
+        public ChangeType ChangeType { get; set; }
     }
 
     public delegate void VertexChangedEventHandler(Object sender, VertexChangedEventArgs e);
@@ -298,23 +300,23 @@ namespace GraphEditor3b3
         }
 
         /// <summary>
-        /// Add an edge
+        /// Add an Edge between two
         /// </summary>
         /// <param name="edgeToAdd"></param>
         /// <returns></returns>
         public Boolean AddEdge(GraphEdge edgeToAdd)
         {
             Debug.WriteLine("Adding edge");
-            if (this.Edges.ContainsKey(edgeToAdd.EdgeId))
-            {
-                return false;
-            }
+            //if (this.Edges.ContainsKey(edgeToAdd.EdgeId))
+            //{
+            //    return false;
+            //}
             this.Edges.Add(edgeToAdd.EdgeId, edgeToAdd);
             //this.AdjacencyMatrix[edgeToAdd.HeadVertexId].Add(edgeToAdd.TailVertexId);
             //this.AdjacencyMatrix[edgeToAdd.TailVertexId].Add(edgeToAdd.HeadVertexId);
             //this.IncidenceMatrix[edgeToAdd.HeadVertexId].Add(edgeToAdd.EdgeId);
             //this.IncidenceMatrix[edgeToAdd.TailVertexId].Add(edgeToAdd.EdgeId);
-            OnEdgesChanged(new EdgeChangedEventArgs { ChangedEdge = edgeToAdd });
+            OnEdgesChanged(new EdgeChangedEventArgs { ChangedEdge = edgeToAdd, ChangeType = ChangeType.Added });
             this.LastEdgeChange = ChangeType.Removed;
             return true;
         }
@@ -418,10 +420,13 @@ namespace GraphEditor3b3
             Int32 maxNumVerts,
             Double edgeProb)
         {
+            Debug.WriteLine("RengerateRandomGraph()");
             Int32 numVerts = this.rng.Next(minNumVerts, maxNumVerts);
+
             this.Vertices.Clear();
             this.Edges.Clear();
 
+            // Create the desired number of vertices
             for (int i = 0; i < numVerts; i++)
             {
                 GraphVertex gv = new GraphVertex

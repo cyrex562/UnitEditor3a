@@ -163,15 +163,16 @@ namespace GraphEditor3b3
             //this.drawableGraph = DrawableGraph.LayoutDGraphRandom(true, this.rng, this.MainCanvas, this.currentGraph);
         }
 
+        // TODO: look at making async
         private void GenerateBtn_Click(Object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("generate new random graph button clicked");
-            this.StatusTextBlock.Text = "Generating new graph with random layout";
             this.currentGraph.RegenerateRandomGraph(this.minVertices, this.maxVertices, this.edgeProbability);
             InitGraphSupport();
             //SetCurrentGraph();
             this.currentGraph.RelayoutGraphRandom(this.MainCanvas);
             this.MainCanvas.Invalidate();
+            this.StatusTextBlock.Text = "Random graph generated";
         }
 
         /// <summary>

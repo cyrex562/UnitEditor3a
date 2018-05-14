@@ -69,12 +69,16 @@
                           ItemsSource="{x:Bind observableVertices}"
                           ScrollViewer.VerticalScrollBarVisibility="Visible"
                           ScrollViewer.VerticalScrollMode="Enabled"
+                          SelectionMode="Extended"
+                          IsItemClickEnabled="False"
+                          SelectionChanged="VertexList_SelectionChanged"
                           Height="120"
                           Margin="0,20,0,0">
                     <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="local:Vertex">
-                            <TextBlock Text="{x:Bind ListItemText}"
-                                       TextWrapping="Wrap"/>
+                        <DataTemplate x:DataType="local:GraphVertex">
+                            <TextBlock Text="{x:Bind ShortListItemText}"
+                                       TextWrapping="Wrap"
+                                       FontSize="10"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
@@ -83,12 +87,16 @@
                           ItemsSource="{x:Bind observableEdges}"
                           ScrollViewer.VerticalScrollBarVisibility="Visible"
                           ScrollViewer.VerticalScrollMode="Enabled"
+                          SelectionMode="Extended"
+                          IsItemClickEnabled="False"
+                          SelectionChanged="EdgeList_SelectionChanged"
                           Height="120"
                           Margin="0,0,0,20">
                     <ListView.ItemTemplate>
-                        <DataTemplate x:DataType="local:Edge">
-                            <TextBlock Text="{x:Bind ListItemText}"
-                                       TextWrapping="Wrap"/>
+                        <DataTemplate x:DataType="local:GraphEdge">
+                            <TextBlock Text="{x:Bind ShortListItemText}"
+                                       TextWrapping="Wrap"
+                                       FontSize="10"/>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

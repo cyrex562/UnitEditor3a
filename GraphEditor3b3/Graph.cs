@@ -5,6 +5,10 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Numerics;
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Geometry;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace GraphEditor3b3
 {
@@ -18,12 +22,12 @@ namespace GraphEditor3b3
 
     public class VertexChangedEventArgs : EventArgs
     {
-        public Vertex ChangedVertex { get; set; }
+        public GraphVertex ChangedVertex { get; set; }
     }
 
     public class EdgeChangedEventArgs : EventArgs
     {
-        public Edge ChangedEdge { get; set; }
+        public GraphEdge ChangedEdge { get; set; }
     }
 
     public delegate void VertexChangedEventHandler(Object sender, VertexChangedEventArgs e);
@@ -36,18 +40,22 @@ namespace GraphEditor3b3
         [DataMember]
         public Guid GraphId { get; set; }
         [DataMember]
-        public Dictionary<Guid, Vertex> Vertices { get; set; }
+        public Dictionary<Guid, GraphVertex> Vertices { get; set; }
         [DataMember]
-        public Dictionary<Guid, Edge> Edges { get; set; }
+        public Dictionary<Guid, GraphEdge> Edges { get; set; }
         // adjacent matrix: a 2-D matrix in which the rows represent source vertices and columns represent dest vertices
-        [DataMember]
-        public Dictionary<Guid, List<Guid>> AdjacencyMatrix { get; set; }
+        //[DataMember]
+        //public Dictionary<Guid, List<Guid>> AdjacencyMatrix { get; set; }
         // incidence matrix: a 2-D boolean matrix in which the rows represent vertices and columns represent edges.
         // List of edges for a given Vertex ID
-        [DataMember]
-        public Dictionary<Guid, List<Guid>> IncidenceMatrix { get; set; }
-        public ChangeType LastVertexChange;
-        public ChangeType LastEdgeChange;
+        //[DataMember]
+        //public Dictionary<Guid, List<Guid>> IncidenceMatrix { get; set; }
+
+        public DrawableGraphLayout Layout { get; set; }
+        public ChangeType LastVertexChange { get; set; }
+        public ChangeType LastEdgeChange { get; set; }
+        public Boolean FitToView { get; set; }
+        private Random rng;
 
         /// <summary>
         /// 
@@ -55,15 +63,135 @@ namespace GraphEditor3b3
         public Graph()
         {
             Debug.WriteLine("UGraph()");
-            this.Vertices = new Dictionary<Guid, Vertex>();
-            this.Edges = new Dictionary<Guid, Edge>();
+            this.Vertices = new Dictionary<Guid, GraphVertex>();
+            this.Edges = new Dictionary<Guid, GraphEdge>();
             this.GraphId = new Guid();
-            this.AdjacencyMatrix = new Dictionary<Guid, List<Guid>>();
-            this.IncidenceMatrix = new Dictionary<Guid, List<Guid>>();
+            //this.AdjacencyMatrix = new Dictionary<Guid, List<Guid>>();
+            //this.IncidenceMatrix = new Dictionary<Guid, List<Guid>>();
+            this.Layout = DrawableGraphLayout.None;
+            this.FitToView = Defines.FIT_GRAPH_TO_VIEW;
+            this.rng = new Random();
         }
+
+        public void Draw(CanvasDrawingSession cds)
+        {
+            Debug.WriteLine("drawing graph");
+            foreach (KeyValuePair<Guid, GraphVertex> kvp in this.Vertices)
+            {
+                kvp.Value.Draw(cds);
+            }
+
+            foreach (KeyValuePair<Guid, GraphEdge> kvp in this.Edges)
+            {
+                kvp.Value.Draw(cds);
+            }
+        }
+
+        public void RelayoutGraphRandom(
+            CanvasControl canvas)
+        {
+            this.Layout = DrawableGraphLayout.Random;
+
+            foreach (KeyValuePair<Guid, GraphVertex> kvp in this.Vertices)
+            {
+                Int32 minX = Defines.VERTEX_SIZE;
+                Int32 minY = Defines.VERTEX_SIZE;
+                Int32 maxX = 0;
+                Int32 maxY = 0;
+                if (this.FitToView == true)
+                {
+
+                    maxX = (Int32)canvas.ActualWidth - Defines.VERTEX_SIZE - Defines.MAX_VERT_SPACE;
+                    maxY = maxX;
+                } 
+                else
+                {
+                    maxX = Defines.VERTEX_SIZE * (this.Vertices.Count + Defines.MAX_VERT_SPACE);
+                    maxY = maxX;
+                }
+
+                kvp.Value.Position = new Vector2(this.rng.Next(minX, maxX), this.rng.Next(minY, maxY));
+                kvp.Value.Circle = CanvasGeometry.CreateCircle(canvas, kvp.Value.Position, kvp.Value.VertexSize);
+            }
+
+            foreach (KeyValuePair<Guid, GraphEdge> kvp in this.Edges)
+            {
+                CanvasPathBuilder pathBuilder = new CanvasPathBuilder(canvas);
+                kvp.Value.HeadPosition = this.Vertices[kvp.Value.HeadVertexId].Position;
+                kvp.Value.TailPosition = this.Vertices[kvp.Value.TailVertexId].Position;
+                pathBuilder.BeginFigure(kvp.Value.HeadPosition);
+                pathBuilder.AddLine(kvp.Value.TailPosition);
+                pathBuilder.EndFigure(CanvasFigureLoop.Open);
+                kvp.Value.Line = CanvasGeometry.CreatePath(pathBuilder);
+            }
+        }
+
+        //public static Graph LayoutDGraphRandom(
+        //    Boolean fitGraphToView,
+        //    Random rng,
+        //    CanvasControl canvas,
+        //    Graph graph)
+        //{
+        //    Debug.WriteLine("Laying out graph in random pattern");
+        //    //Dictionary<Guid, DrawableVertex> dVerts;
+        //    //Dictionary<Guid, DrawableEdge> dEdges;
+        //    Graph dg = new Graph();
+        //    dg.Layout = DrawableGraphLayout.Random;
+        //    dg.FitToView = fitGraphToView;
+
+        //    foreach (KeyValuePair<Guid, GraphVertex> kvp in graph.Vertices)
+        //    {
+        //        Int32 min_x = Defines.VERTEX_SIZE;
+        //        Int32 min_y = Defines.VERTEX_SIZE;
+        //        Int32 max_x = 0;
+        //        Int32 max_y = 0;
+        //        if (fitGraphToView == true)
+        //        {
+        //            max_x = (Int32)canvas.ActualWidth - Defines.VERTEX_SIZE - Defines.MAX_VERT_SPACE;
+        //            max_y = (Int32)canvas.ActualHeight - Defines.VERTEX_SIZE - Defines.MAX_VERT_SPACE;
+        //        }
+        //        else
+        //        {
+        //            max_x = Defines.VERTEX_SIZE * (graph.Vertices.Count + Defines.MAX_VERT_SPACE);
+        //            max_y = Defines.VERTEX_SIZE * (graph.Vertices.Count + Defines.MAX_VERT_SPACE);
+        //        }
+
+        //        Vector2 circlePos = new Vector2(rng.Next(min_x, max_x), rng.Next(min_y, max_y));
+        //        GraphVertex dn = new GraphVertex
+        //        {
+        //            Position = circlePos,
+        //            VertexId = kvp.Value.VertexId,
+        //            Circle = CanvasGeometry.CreateCircle(canvas, circlePos, Defines.VERTEX_SIZE)
+        //        };
+        //        dg.Vertices[dn.VertexId] = dn;
+        //    }
+
+        //    foreach (KeyValuePair<Guid, GraphEdge> kvp in graph.Edges)
+        //    {
+        //        CanvasPathBuilder pathBuilder = new CanvasPathBuilder(canvas);
+
+        //        GraphEdge de = new GraphEdge
+        //        {
+        //            EdgeId = kvp.Value.EdgeId,
+        //            HeadVertexId = kvp.Value.HeadVertexId,
+        //            TailVertexId = kvp.Value.TailVertexId,
+        //        };
+        //        de.HeadPosition = dg.Vertices[de.HeadVertexId].Position;
+        //        de.TailPosition = dg.Vertices[de.TailVertexId].Position;
+        //        pathBuilder.BeginFigure(de.HeadPosition);
+        //        pathBuilder.AddLine(de.TailPosition);
+        //        pathBuilder.EndFigure(CanvasFigureLoop.Open);
+        //        de.Line = CanvasGeometry.CreatePath(pathBuilder);
+        //        dg.Edges[de.EdgeId] = de;
+        //    }
+
+        //    //canvas.Invalidate();
+        //    return dg;
+        //}
 
         protected virtual void OnVerticesChanged(VertexChangedEventArgs e)
         {
+            Debug.WriteLine("on vertices changed");
             VertexChangedEventHandler handler = VerticesChanged;
             if (handler != null)
             {
@@ -73,6 +201,7 @@ namespace GraphEditor3b3
 
         protected virtual void OnEdgesChanged(EdgeChangedEventArgs e)
         {
+            Debug.Write("on edges changed");
             EdgeChangedEventHandler handler = EdgesChanged;
             if (handler != null)
             {
@@ -91,12 +220,13 @@ namespace GraphEditor3b3
         /// <returns></returns>
         public Boolean Adjacent(Guid headVertexId, Guid tailVertexId)
         {
+            Debug.WriteLine("checking if vertices are adjacent");
             if (this.Vertices.ContainsKey(headVertexId) == false)
             {
                 return false;
             }
 
-            Vertex uv = this.Vertices[headVertexId];
+            GraphVertex uv = this.Vertices[headVertexId];
 
             foreach (Guid neighId in uv.Neighbors)
             {
@@ -116,7 +246,8 @@ namespace GraphEditor3b3
         /// <returns></returns>
         public List<Guid> Neighbors(Guid vertexId)
         {
-            Vertex uv = this.Vertices[vertexId];
+            Debug.WriteLine("Getting vertexes' neighbors");
+            GraphVertex uv = this.Vertices[vertexId];
             return uv.Neighbors;
         }
 
@@ -132,16 +263,17 @@ namespace GraphEditor3b3
         /// </summary>
         /// <param name="vertexToAdd"></param>
         /// <returns></returns>
-        public Boolean AddVertex(Vertex vertexToAdd)
+        public Boolean AddVertex(GraphVertex vertexToAdd)
         {
+            Debug.WriteLine("Adding vertex");
             if (VertexExists(vertexToAdd.VertexId) == true)
             {
                 return false;
             }
 
             this.Vertices.Add(vertexToAdd.VertexId, vertexToAdd);
-            this.AdjacencyMatrix.Add(vertexToAdd.VertexId, new List<Guid>());
-            this.IncidenceMatrix.Add(vertexToAdd.VertexId, new List<Guid>());
+            //this.AdjacencyMatrix.Add(vertexToAdd.VertexId, new List<Guid>());
+            //this.IncidenceMatrix.Add(vertexToAdd.VertexId, new List<Guid>());
             this.LastVertexChange = ChangeType.Added;
             OnVerticesChanged(new VertexChangedEventArgs { ChangedVertex = vertexToAdd});
             return true;
@@ -152,13 +284,14 @@ namespace GraphEditor3b3
         /// </summary>
         public Boolean RemoveVertex(Guid vertexToRemove)
         {
+            Debug.WriteLine("Removing vertex");
             if (!VertexExists(vertexToRemove))
             {
                 return false;
             }
-            Vertex RemovedVertex = this.Vertices[vertexToRemove];
+            GraphVertex RemovedVertex = this.Vertices[vertexToRemove];
             this.Vertices.Remove(vertexToRemove);
-            this.AdjacencyMatrix.Remove(vertexToRemove);
+            //this.AdjacencyMatrix.Remove(vertexToRemove);
             this.LastVertexChange = ChangeType.Removed;
             OnVerticesChanged(new VertexChangedEventArgs { ChangedVertex = RemovedVertex });
             return true;
@@ -169,17 +302,18 @@ namespace GraphEditor3b3
         /// </summary>
         /// <param name="edgeToAdd"></param>
         /// <returns></returns>
-        public Boolean AddEdge(Edge edgeToAdd)
+        public Boolean AddEdge(GraphEdge edgeToAdd)
         {
+            Debug.WriteLine("Adding edge");
             if (this.Edges.ContainsKey(edgeToAdd.EdgeId))
             {
                 return false;
             }
             this.Edges.Add(edgeToAdd.EdgeId, edgeToAdd);
-            this.AdjacencyMatrix[edgeToAdd.HeadVertexId].Add(edgeToAdd.TailVertexId);
-            this.AdjacencyMatrix[edgeToAdd.TailVertexId].Add(edgeToAdd.HeadVertexId);
-            this.IncidenceMatrix[edgeToAdd.HeadVertexId].Add(edgeToAdd.EdgeId);
-            this.IncidenceMatrix[edgeToAdd.TailVertexId].Add(edgeToAdd.EdgeId);
+            //this.AdjacencyMatrix[edgeToAdd.HeadVertexId].Add(edgeToAdd.TailVertexId);
+            //this.AdjacencyMatrix[edgeToAdd.TailVertexId].Add(edgeToAdd.HeadVertexId);
+            //this.IncidenceMatrix[edgeToAdd.HeadVertexId].Add(edgeToAdd.EdgeId);
+            //this.IncidenceMatrix[edgeToAdd.TailVertexId].Add(edgeToAdd.EdgeId);
             OnEdgesChanged(new EdgeChangedEventArgs { ChangedEdge = edgeToAdd });
             this.LastEdgeChange = ChangeType.Removed;
             return true;
@@ -192,7 +326,8 @@ namespace GraphEditor3b3
         /// <returns></returns>
         public Boolean RemoveEdge(Guid edgeToRemove)
         {
-            Edge ue = this.Edges[edgeToRemove];
+            Debug.WriteLine("Removing edge");
+            GraphEdge ue = this.Edges[edgeToRemove];
             Guid headVertexId = ue.HeadVertexId;
             Guid tailVertexId = ue.TailVertexId;
             if (!this.Edges.ContainsKey(edgeToRemove))
@@ -200,10 +335,10 @@ namespace GraphEditor3b3
                 return false;
             }
             this.Edges.Remove(edgeToRemove);
-            this.AdjacencyMatrix[headVertexId].Remove(tailVertexId);
-            this.AdjacencyMatrix[tailVertexId].Remove(headVertexId);
-            this.IncidenceMatrix[headVertexId].Remove(edgeToRemove);
-            this.IncidenceMatrix[tailVertexId].Remove(edgeToRemove);
+            //this.AdjacencyMatrix[headVertexId].Remove(tailVertexId);
+            //this.AdjacencyMatrix[tailVertexId].Remove(headVertexId);
+            //this.IncidenceMatrix[headVertexId].Remove(edgeToRemove);
+            //this.IncidenceMatrix[tailVertexId].Remove(edgeToRemove);
             OnEdgesChanged(new EdgeChangedEventArgs { ChangedEdge = ue });
             this.LastEdgeChange = ChangeType.Removed;
             return true;
@@ -216,6 +351,7 @@ namespace GraphEditor3b3
         /// <returns></returns>
         public Int32 GetVertexValue(Guid vertexId)
         {
+            Debug.WriteLine("getting vertex value");
             if (!this.VertexExists(vertexId))
             {
                 return -1;
@@ -231,11 +367,12 @@ namespace GraphEditor3b3
         /// <returns></returns>
         public Boolean SetVertexValue(Guid vertexId, Int32 newValue)
         {
+            Debug.WriteLine("setting vertex value");
             if (!this.VertexExists(vertexId))
             {
                 return false;
             }
-            Vertex uv = this.Vertices[vertexId];
+            GraphVertex uv = this.Vertices[vertexId];
             uv.Value = newValue;
             OnVerticesChanged(new VertexChangedEventArgs { ChangedVertex = uv});
             this.LastVertexChange = ChangeType.Modified;
@@ -249,6 +386,7 @@ namespace GraphEditor3b3
         /// <returns></returns>
         public Int32 GetEdgeValue(Guid edgeId)
         {
+            Debug.WriteLine("getting edge value");
             if (!this.Edges.ContainsKey(edgeId))
             {
                 return -1;
@@ -264,6 +402,7 @@ namespace GraphEditor3b3
         /// <returns></returns>
         public Boolean SetEdgeValue(Guid edgeId, Int32 newValue)
         {
+            Debug.WriteLine("setting edge value");
             if (!this.Edges.ContainsKey(edgeId))
             {
                 return false;
@@ -274,58 +413,104 @@ namespace GraphEditor3b3
             return true;
         }
 
+        public void RegenerateRandomGraph(
+            Int32 minNumVerts,
+            Int32 maxNumVerts,
+            Double edgeProb)
+        {
+            Int32 numVerts = this.rng.Next(minNumVerts, maxNumVerts);
+            this.Vertices.Clear();
+            this.Edges.Clear();
+
+            for (int i = 0; i < numVerts; i++)
+            {
+                GraphVertex gv = new GraphVertex
+                {
+                    Value = this.rng.Next()
+                };
+                this.AddVertex(gv);
+            }
+
+            foreach (KeyValuePair<Guid, GraphVertex> kvp1 in this.Vertices)
+            {
+                foreach (KeyValuePair<Guid, GraphVertex> kvp2 in this.Vertices)
+                {
+                    if (kvp1.Value.VertexId != kvp2.Value.VertexId)
+                    {
+                        Double val = this.rng.NextDouble();
+                        if (val >= edgeProb)
+                        {
+                            GraphEdge ge = new GraphEdge
+                            {
+                                HeadVertexId = kvp1.Value.VertexId,
+                                TailVertexId = kvp2.Value.VertexId,
+                                Value = this.rng.Next()
+                            };
+                            this.AddEdge(ge);
+                            kvp1.Value.AddNeighbor(kvp2.Value.VertexId);
+                            kvp1.Value.AddEdge(ge.EdgeId);
+                            kvp2.Value.AddNeighbor(kvp1.Value.VertexId);
+                            kvp2.Value.AddEdge(ge.EdgeId);
+                        }
+                    }
+                    
+                }
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="appContext"></param>
         /// <returns></returns>
-        public static Graph GenerateRandomGraph(
-            Random rng,
-            Int32 minNumVerts,
-            Int32 maxNumVerts,
-            Double edgeProb)
-        {
-            Int32 numNodes = rng.Next(minNumVerts, maxNumVerts);
-            Graph outGraph = new Graph();
+        //public static Graph GenerateRandomGraph(
+        //    Random rng,
+        //    Int32 minNumVerts,
+        //    Int32 maxNumVerts,
+        //    Double edgeProb)
+        //{
+        //    Debug.WriteLine("generating random graph");
+        //    Int32 numNodes = rng.Next(minNumVerts, maxNumVerts);
+        //    Graph outGraph = new Graph();
             
-            for (Int32 i = 0; i < numNodes; i++)
-            {
-                Vertex uv = new Vertex
-                {
-                    Value = rng.Next()
-                };
-                outGraph.AddVertex(uv);
-            }
+        //    for (Int32 i = 0; i < numNodes; i++)
+        //    {
+        //        GraphVertex uv = new GraphVertex
+        //        {
+        //            Value = rng.Next()
+        //        };
+        //        outGraph.AddVertex(uv);
+        //    }
 
-            foreach (KeyValuePair<Guid, Vertex> kvp1 in outGraph.Vertices)
-            {
-                foreach (KeyValuePair<Guid, Vertex> kvp2 in outGraph.Vertices)
-                {
-                    if (kvp1.Value.VertexId != kvp2.Value.VertexId)
-                    {
-                        Int32 prob = rng.Next(1, 10);
-                        if (prob >= edgeProb * 10)
-                        {
-                            Edge ue = new Edge
-                            {
-                                HeadVertexId = kvp1.Value.VertexId,
-                                TailVertexId = kvp2.Value.VertexId,
-                                Value = rng.Next()
-                            };
-                            outGraph.Edges.Add(ue.EdgeId, ue);
-                            kvp1.Value.AddNeighbor(kvp2.Value.VertexId);
-                            kvp1.Value.AddEdge(ue.EdgeId);
-                            kvp2.Value.AddNeighbor(kvp1.Value.VertexId);
-                            kvp2.Value.AddEdge(ue.EdgeId);
+        //    foreach (KeyValuePair<Guid, GraphVertex> kvp1 in outGraph.Vertices)
+        //    {
+        //        foreach (KeyValuePair<Guid, GraphVertex> kvp2 in outGraph.Vertices)
+        //        {
+        //            if (kvp1.Value.VertexId != kvp2.Value.VertexId)
+        //            {
+        //                Int32 prob = rng.Next(1, 10);
+        //                if (prob >= edgeProb * 10)
+        //                {
+        //                    GraphEdge ue = new GraphEdge
+        //                    {
+        //                        HeadVertexId = kvp1.Value.VertexId,
+        //                        TailVertexId = kvp2.Value.VertexId,
+        //                        Value = rng.Next()
+        //                    };
+        //                    outGraph.Edges.Add(ue.EdgeId, ue);
+        //                    kvp1.Value.AddNeighbor(kvp2.Value.VertexId);
+        //                    kvp1.Value.AddEdge(ue.EdgeId);
+        //                    kvp2.Value.AddNeighbor(kvp1.Value.VertexId);
+        //                    kvp2.Value.AddEdge(ue.EdgeId);
 
-                        }
-                    }
-                }
-            }
+        //                }
+        //            }
+        //        }
+        //    }
 
-            return outGraph;
+        //    return outGraph;
 
-        }
+        //}
 
         /// <summary>
         /// 
@@ -334,6 +519,7 @@ namespace GraphEditor3b3
         /// <returns></returns>
         public static String GraphToJson(Graph graph)
         {
+            Debug.WriteLine("converting graph to JSON object");
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Graph));
             MemoryStream memStream = new MemoryStream();
             serializer.WriteObject(memStream, graph);
@@ -347,13 +533,25 @@ namespace GraphEditor3b3
         /// </summary>
         /// <param name="graphString"></param>
         /// <returns></returns>
-        public static Graph JsonToGraph(String graphString)
+        //public static Graph JsonToGraph(String graphString)
+        //{
+        //    Debug.WriteLine("converting JSON object to graph");
+        //    Graph loadedGraph = new Graph();
+        //    MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(graphString));
+        //    DataContractJsonSerializer ser = new DataContractJsonSerializer(loadedGraph.GetType());
+        //    loadedGraph = ser.ReadObject(ms) as Graph;
+        //    return loadedGraph;
+        //}
+
+        public void reloadGraphFromJson(String graphString)
         {
-            Graph loadedGraph = new Graph();
-            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(graphString));
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(loadedGraph.GetType());
-            loadedGraph = ser.ReadObject(ms) as Graph;
-            return loadedGraph;
+            return; 
+        }
+
+        public void ClearGraph()
+        {
+            this.Vertices.Clear();
+            this.Edges.Clear();
         }
     }
 }

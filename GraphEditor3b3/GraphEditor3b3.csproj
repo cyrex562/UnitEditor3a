@@ -103,7 +103,9 @@
     <Compile Include="DrawableVertex.cs" />
     <Compile Include="EdgeDirection.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="GraphEdge.cs" />
     <Compile Include="GraphState.cs" />
+    <Compile Include="GraphVertex.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

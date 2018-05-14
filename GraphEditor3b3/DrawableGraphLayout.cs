@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GraphEditor3b3
 {
-    enum DrawableGraphLayout
+    public enum DrawableGraphLayout
     {
         None,
         Random

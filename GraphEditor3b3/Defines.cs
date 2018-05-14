@@ -22,14 +22,15 @@ namespace GraphEditor3b3
             MAX_X = VERTEX_SIZE * (MAX_NUM_VERTS + MAX_VERT_SPACE);
         public const Int32 MIN_Y = 0;
         public const Int32 MAX_Y = VERTEX_SIZE * (MAX_NUM_VERTS + MAX_VERT_SPACE);
-        public static readonly Color DEF_VERT_COLOR = Colors.White;
-        public const Int32 VERT_LINE_WIDTH = 3;
+        public static readonly Color DEF_VERT_LINE_COLOR = Colors.White;
+       
         public const Double EDGE_PROBABILITY = 0.5;
 
         public static readonly Color DEF_EDGE_COLOR = Colors.White;
         public static readonly Color SEL_EDGE_COLOR = Colors.Red;
-        public static readonly Color SEL_VERT_COLOR = Colors.Red;
+        public static readonly Color SEL_VERT_LINE_COLOR = Colors.Red;
         public const Int32 DEF_EDGE_LINE_WIDTH = 3;
+        public const Int32 DEF_VERT_LINE_WIDTH = 3;
         public const Boolean FIT_GRAPH_TO_VIEW = true;
     }
 }

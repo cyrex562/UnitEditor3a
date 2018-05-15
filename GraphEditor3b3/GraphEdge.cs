@@ -16,15 +16,15 @@ namespace GraphEditor3b3
     public class GraphEdge
     {
         [DataMember]
-        public UInt64 HeadVertexId { get; set; }
+        public UInt32 HeadVertexId { get; set; }
         [DataMember]
-        public UInt64 TailVertexId { get; set; }
+        public UInt32 TailVertexId { get; set; }
         [DataMember]
         public Int32 Value { get; set; }
         [DataMember]
         public EdgeDirection Direction { get; set; }
         [DataMember]
-        public UInt64 EdgeId { get; set; }
+        public UInt32 EdgeId { get; set; }
 
         // non-json members
         public Vector2 HeadPosition { get; set; }

@@ -98,12 +98,12 @@ namespace GraphEditor3b3
         private void InitObservables()
         {
             Debug.WriteLine("init observable edges and vertices");
-            foreach (KeyValuePair<UInt64, GraphVertex> kvp in this.currentGraph.Vertices)
+            foreach (KeyValuePair<UInt32, GraphVertex> kvp in this.currentGraph.Vertices)
             {
                 this.observableVertices.Add(kvp.Value);
             }
 
-            foreach (KeyValuePair<UInt64, GraphEdge> kvp in this.currentGraph.Edges)
+            foreach (KeyValuePair<UInt32, GraphEdge> kvp in this.currentGraph.Edges)
             {
                 this.observableEdges.Add(kvp.Value);
             }
@@ -411,7 +411,7 @@ namespace GraphEditor3b3
             }
         }
 
-        private Int32 GetEdgeListIndex(UInt64 edgeId)
+        private Int32 GetEdgeListIndex(UInt32 edgeId)
         {
             for (Int32 i = 0; i < this.observableEdges.Count; i++)
             {
@@ -423,7 +423,7 @@ namespace GraphEditor3b3
             return -1;
         }
 
-        private Int32 GetVertexListIndex(UInt64 vertexId)
+        private Int32 GetVertexListIndex(UInt32 vertexId)
         {
             Debug.WriteLine("Getting vertex list index");
             for (Int32 i = 0; i < this.observableVertices.Count; i++)
@@ -494,7 +494,7 @@ namespace GraphEditor3b3
                 }
 
                 Boolean shapeFound = false;
-                foreach (KeyValuePair<UInt64, GraphVertex> kvp in this.currentGraph.Vertices)
+                foreach (KeyValuePair<UInt32, GraphVertex> kvp in this.currentGraph.Vertices)
                 {
                     Rect bounds = kvp.Value.Circle.ComputeBounds();
                     if (bounds.Contains(pointerPosition) == true)
@@ -509,7 +509,7 @@ namespace GraphEditor3b3
 
                 if (shapeFound == false)
                 {
-                    foreach (KeyValuePair<UInt64, GraphEdge> kvp in this.currentGraph.Edges)
+                    foreach (KeyValuePair<UInt32, GraphEdge> kvp in this.currentGraph.Edges)
                     {
                         Rect bounds = kvp.Value.Line.ComputeBounds();
                         if (bounds.Contains(pointerPosition) == true)

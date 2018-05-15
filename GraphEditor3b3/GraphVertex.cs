@@ -16,11 +16,13 @@ namespace GraphEditor3b3
     public class GraphVertex
     {
         [DataMember]
-        public List<UInt64> Neighbors { get; set; }
+        //public List<UInt32> Neighbors { get; set; }
+        public SortedSet<UInt32> Neighbors { get; set; }
         [DataMember]
-        public List<UInt64> Edges { get; set; }
+        //public List<UInt32> Edges { get; set; }
+        public SortedSet<UInt32> Edges { get; set; }
         [DataMember]
-        public UInt64 VertexId { get; set; }
+        public UInt32 VertexId { get; set; }
         [DataMember]
         public Int32 Value { get; set; }
 
@@ -36,8 +38,8 @@ namespace GraphEditor3b3
 
         public GraphVertex()
         {
-            this.Neighbors = new List<UInt64>();
-            this.Edges = new List<UInt64>();
+            this.Neighbors = new SortedSet<UInt32>();
+            this.Edges = new SortedSet<UInt32>();
             this.Value = -1;
             this.Position = Vector2.Zero;
             this.Selected = false;
@@ -48,21 +50,23 @@ namespace GraphEditor3b3
             this.Redraw = true;
         }
 
-        public Boolean NodeInNeighbors(UInt64 nodeId)
+        public Boolean NodeInNeighbors(UInt32 nodeId)
         {
             Debug.WriteLine("checking for neighbor");
-            foreach (UInt64 neighId in this.Neighbors)
-            {
-                if (neighId == nodeId)
-                {
-                    return true;
-                }
-            }
+            return this.Neighbors.Contains(nodeId);
 
-            return false;
+            //foreach (UInt32 neighId in this.Neighbors)
+            //{
+            //    if (neighId == nodeId)
+            //    {
+            //        return true;
+            //    }
+            //}
+
+            //return false;
         }
 
-        public void AddNeighbor(UInt64 newNeighbor)
+        public void AddNeighbor(UInt32 newNeighbor)
         {
             Debug.WriteLine("adding neighbor");
             if (NodeInNeighbors(newNeighbor) == false)
@@ -71,7 +75,11 @@ namespace GraphEditor3b3
             }
         }
 
-        public void AddEdge(UInt64 newEdge)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="newEdge"></param>
+        public void AddEdge(UInt32 newEdge)
         {
             Debug.WriteLine("adding edge");
             if (EdgeInEdges(newEdge) == false)
@@ -85,18 +93,19 @@ namespace GraphEditor3b3
         /// </summary>
         /// <param name="edgeIdTerm"></param>
         /// <returns></returns>
-        public Boolean EdgeInEdges(UInt64 edgeIdTerm)
+        public Boolean EdgeInEdges(UInt32 edgeIdTerm)
         {
             Debug.WriteLine("checking for incident edge");
-            foreach (UInt64 edgeId in this.Edges)
-            {
-                if (edgeIdTerm == edgeId)
-                {
-                    return true;
-                }
-            }
+            //foreach (UInt32 edgeId in this.Edges)
+            //{
+            //    if (edgeIdTerm == edgeId)
+            //    {
+            //        return true;
+            //    }
+            //}
 
-            return false;
+            //return false;
+            return this.Edges.Contains(edgeIdTerm);
         }
 
         public String ListItemText

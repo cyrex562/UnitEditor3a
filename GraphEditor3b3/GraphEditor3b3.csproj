@@ -98,11 +98,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppContext.cs" />
+    <Compile Include="BinarySearchTree.cs" />
     <Compile Include="Defines.cs" />
-    <Compile Include="DrawableEdge.cs" />
-    <Compile Include="DrawableGraph.cs" />
     <Compile Include="DrawableGraphLayout.cs" />
-    <Compile Include="DrawableVertex.cs" />
     <Compile Include="EdgeDirection.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GraphEdge.cs" />

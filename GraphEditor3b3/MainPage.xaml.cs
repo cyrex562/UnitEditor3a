@@ -1,4 +1,5 @@
-﻿using Microsoft.Graphics.Canvas.Text;
+﻿using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,8 +27,8 @@ namespace GraphEditor3b3
     {
         Graph currentGraph;
         Random rng;
-        Int32 minVertices;
-        Int32 maxVertices;
+        UInt32 minVertices;
+        UInt32 maxVertices;
         Double edgeProbability;
         ObservableCollection<GraphVertex> observableVertices;
         ObservableCollection<GraphEdge> observableEdges;
@@ -85,34 +86,44 @@ namespace GraphEditor3b3
         //    }
         //}
 
-        private void InitGraphSupport()
+        private void ClearObservables()
         {
-            Debug.WriteLine("setting current graph");
-            if (this.currentGraph != null)
+            Debug.WriteLine("clear observable edges and vertices");
+            this.observableEdges.Clear();
+            this.observableVertices.Clear();
+        }
+
+
+
+        private void InitObservables()
+        {
+            Debug.WriteLine("init observable edges and vertices");
+            foreach (KeyValuePair<UInt64, GraphVertex> kvp in this.currentGraph.Vertices)
             {
-                Debug.WriteLine("clearing observable edges and vertices");
-                this.observableEdges.Clear();
-                this.observableVertices.Clear();
-                //this.currentGraph = inGraph;
+                this.observableVertices.Add(kvp.Value);
+            }
 
-                Debug.WriteLine("adding new graph observable edges and vertices");
-                foreach (KeyValuePair<Guid, GraphVertex> kvp in this.currentGraph.Vertices)
-                {
-                    this.observableVertices.Add(kvp.Value);
-                }
+            foreach (KeyValuePair<UInt64, GraphEdge> kvp in this.currentGraph.Edges)
+            {
+                this.observableEdges.Add(kvp.Value);
+            }
+        }
 
-                foreach (KeyValuePair<Guid, GraphEdge> kvp in this.currentGraph.Edges)
-                {
-                    this.observableEdges.Add(kvp.Value);
-                }
+        public void SetEventHandlers()
+        {
+            Debug.WriteLine("set event handlers");
+            this.currentGraph.EdgesChanged += this.EdgesChanged;
+            this.currentGraph.VerticesChanged += this.VerticesChanged;
+        }
 
-                Debug.WriteLine("setting new graph edges and vertices changed listeners");
-                this.currentGraph.EdgesChanged += this.EdgesChanged;
-                this.currentGraph.VerticesChanged += this.VerticesChanged;
-
-                Debug.WriteLine("setting node and vertex counts");
+        public void SetNodeAndVertexStatus(Boolean graphValid)
+        {
+            Debug.WriteLine("setting node and vertex counts");
+            if (graphValid == true)
+            {
                 this.VertexCountTxtBlock.Text = String.Format("# Of Vertices: {0}", this.currentGraph.Vertices.Count);
-                this.EdgeCountTxtBlock.Text = String.Format("# of Edges: {0}", this.currentGraph.Edges.Count);
+                this.EdgeCountTxtBlock.Text = String.Format("# of Edges: {0}",
+                    this.currentGraph.Edges.Count);
             }
             else
             {
@@ -122,55 +133,80 @@ namespace GraphEditor3b3
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        private void InitGraphSupport()
+        {
+            Debug.WriteLine("setting current graph");
+            if (this.currentGraph != null)
+            {
+                ClearObservables();
+
+                InitObservables();
+
+                SetEventHandlers();
+
+                SetNodeAndVertexStatus(true);
+            }
+            else
+            {
+                SetNodeAndVertexStatus(false);
+            }
+        }
+
+        /// <summary>
         /// Draw the stuff on the canvas
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void CanvasControl_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
+        private void CanvasControl_Draw(
+            Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, 
+            Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
         {
-            Debug.WriteLine("canvas draw call");
-            var ds = args.DrawingSession;
+            Debug.WriteLine("canvas draw");
+            CanvasDrawingSession ds = args.DrawingSession;
             if (this.currentGraph != null)
             {
                 this.currentGraph.Draw(args.DrawingSession);
-            } else
+            }
+            else
             {
                 Single x = (Single)(this.MainCanvas.ActualWidth / 2);
                 Single y = (Single)(this.MainCanvas.ActualHeight / 2);
-
                 CanvasTextFormat format = new CanvasTextFormat
                 {
                     FontSize = 30.0f,
                     WordWrapping = CanvasWordWrapping.NoWrap
                 };
 
-                CanvasTextLayout textLayout = new CanvasTextLayout(ds, "Nothing to see here.", format, 0.0f, 0.0f);
-                var bounds = textLayout.LayoutBounds;
-                Single newX = x - (Single)(bounds.Width / 2);
-                Single newY = y - (Single)(bounds.Height / 2);
+                CanvasTextLayout textLayout = new CanvasTextLayout(ds, 
+                    "Nothing to see here.", format, 0.0f, 0.0f);
+                Rect bounds = textLayout.LayoutBounds;
+                Single newX = (Single)((this.MainCanvas.ActualWidth / 2) - (bounds.Width / 2));
+                Single newY = (Single)((this.MainCanvas.ActualHeight / 2) - (bounds.Height / 2));
 
                 ds.DrawTextLayout(textLayout, newX, newY, Colors.White);
-
-                //args.DrawingSession.DrawText("Nothing To Display", new 
             }
         }
 
         private void MyCanvas_CreateResources(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
         {
             Debug.WriteLine("canvas create resources");
-            // Generate a random graph
-            //this.currentGraph = Graph.GenerateRandomGraph(this.rng);
-            //this.drawableGraph = DrawableGraph.LayoutDGraphRandom(true, this.rng, this.MainCanvas, this.currentGraph);
         }
 
         // TODO: look at making async
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GenerateBtn_Click(Object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("generate new random graph button clicked");
-            this.currentGraph.RegenerateRandomGraph(this.minVertices, this.maxVertices, this.edgeProbability);
+            this.currentGraph = Graph.GenerateRandomGraph(this.minVertices, 
+                this.maxVertices, this.edgeProbability);
             InitGraphSupport();
-            //SetCurrentGraph();
-            this.currentGraph.RelayoutGraphRandom(this.MainCanvas);
+            this.currentGraph.LayoutGraphRandom(this.MainCanvas);
             this.MainCanvas.Invalidate();
             this.StatusTextBlock.Text = "Random graph generated";
         }
@@ -273,7 +309,7 @@ namespace GraphEditor3b3
             if (this.currentGraph != null)
             {
                 //this.drawableGraph = DrawableGraph.LayoutDGraphRandom(true, this.rng, this.MainCanvas, this.currentGraph);
-                this.currentGraph.RelayoutGraphRandom(this.MainCanvas);
+                this.currentGraph.LayoutGraphRandom(this.MainCanvas);
                 this.MainCanvas.Invalidate();
             }
         }
@@ -284,7 +320,7 @@ namespace GraphEditor3b3
             if (this.currentGraph != null)
             {
                 this.currentGraph.FitToView = true;
-                this.currentGraph.RelayoutGraphRandom(this.MainCanvas);
+                this.currentGraph.LayoutGraphRandom(this.MainCanvas);
                 this.MainCanvas.Invalidate();
             }
             
@@ -296,7 +332,7 @@ namespace GraphEditor3b3
             if (this.currentGraph != null)
             {
                 this.currentGraph.FitToView = false;
-                this.currentGraph.RelayoutGraphRandom(this.MainCanvas);
+                this.currentGraph.LayoutGraphRandom(this.MainCanvas);
                 this.MainCanvas.Invalidate();
             }
         }
@@ -319,7 +355,7 @@ namespace GraphEditor3b3
             RangeBaseValueChangedEventArgs e)
         {
             Debug.WriteLine("Min vert slider moved");
-            this.minVertices = (Int32)e.NewValue;
+            this.minVertices = (UInt32)e.NewValue;
             if (this.minVertices > this.maxVertices)
             {
                 this.maxVertices += 1;
@@ -336,7 +372,7 @@ namespace GraphEditor3b3
             RangeBaseValueChangedEventArgs e)
         {
             Debug.WriteLine("Max vert slider moved");
-            this.maxVertices = (Int32)e.NewValue;
+            this.maxVertices = (UInt32)e.NewValue;
             if (this.maxVertices < this.minVertices)
             {
                 this.minVertices -= 1;
@@ -375,7 +411,7 @@ namespace GraphEditor3b3
             }
         }
 
-        private Int32 GetEdgeListIndex(Guid edgeId)
+        private Int32 GetEdgeListIndex(UInt64 edgeId)
         {
             for (Int32 i = 0; i < this.observableEdges.Count; i++)
             {
@@ -387,7 +423,7 @@ namespace GraphEditor3b3
             return -1;
         }
 
-        private Int32 GetVertexListIndex(Guid vertexId)
+        private Int32 GetVertexListIndex(UInt64 vertexId)
         {
             Debug.WriteLine("Getting vertex list index");
             for (Int32 i = 0; i < this.observableVertices.Count; i++)
@@ -458,7 +494,7 @@ namespace GraphEditor3b3
                 }
 
                 Boolean shapeFound = false;
-                foreach (KeyValuePair<Guid, GraphVertex> kvp in this.currentGraph.Vertices)
+                foreach (KeyValuePair<UInt64, GraphVertex> kvp in this.currentGraph.Vertices)
                 {
                     Rect bounds = kvp.Value.Circle.ComputeBounds();
                     if (bounds.Contains(pointerPosition) == true)
@@ -473,7 +509,7 @@ namespace GraphEditor3b3
 
                 if (shapeFound == false)
                 {
-                    foreach (KeyValuePair<Guid, GraphEdge> kvp in this.currentGraph.Edges)
+                    foreach (KeyValuePair<UInt64, GraphEdge> kvp in this.currentGraph.Edges)
                     {
                         Rect bounds = kvp.Value.Line.ComputeBounds();
                         if (bounds.Contains(pointerPosition) == true)
@@ -542,7 +578,7 @@ namespace GraphEditor3b3
         private void EdgeList_SelectionChanged(Object sender, SelectionChangedEventArgs e)
         {
             Debug.WriteLine("Edge list selection changed");
-            if (this.currentGraph != null)
+            if (this.currentGraph != null && this.observableEdges.Count > 0)
             {
                 foreach (GraphEdge addedEdge in e.AddedItems)
                 {
@@ -553,24 +589,29 @@ namespace GraphEditor3b3
                 {
                     this.currentGraph.Edges[removedEdge.EdgeId].DeSelect();
                 }
-            }
 
-            this.MainCanvas.Invalidate();
+                this.MainCanvas.Invalidate();
+            }
         }
 
         private void VertexList_SelectionChanged(Object sender, SelectionChangedEventArgs e)
         {
             Debug.WriteLine("Vertex list selection changed");
-            foreach (GraphVertex addedVertex in e.AddedItems)
-            {
-                this.currentGraph.Vertices[addedVertex.VertexId].Select();
-            }
 
-            foreach (GraphVertex removedVertex in e.RemovedItems)
+            if (this.currentGraph != null && this.observableVertices.Count > 0)
             {
-                this.currentGraph.Vertices[removedVertex.VertexId].Deselect();
+                foreach (GraphVertex addedVertex in e.AddedItems)
+                {
+                    this.currentGraph.Vertices[addedVertex.VertexId].Select();
+                }
+
+                foreach (GraphVertex removedVertex in e.RemovedItems)
+                {
+                    this.currentGraph.Vertices[removedVertex.VertexId].Deselect();
+                }
+
+                this.MainCanvas.Invalidate();
             }
-            this.MainCanvas.Invalidate();
         }
     } // end of class
 } // end of namespace

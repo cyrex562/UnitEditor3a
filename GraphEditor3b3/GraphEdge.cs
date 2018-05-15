@@ -16,33 +16,33 @@ namespace GraphEditor3b3
     public class GraphEdge
     {
         [DataMember]
-        public Guid HeadVertexId { get; set; }
+        public UInt64 HeadVertexId { get; set; }
         [DataMember]
-        public Guid TailVertexId { get; set; }
+        public UInt64 TailVertexId { get; set; }
         [DataMember]
         public Int32 Value { get; set; }
         [DataMember]
         public EdgeDirection Direction { get; set; }
         [DataMember]
-        public Guid EdgeId { get; set; }
+        public UInt64 EdgeId { get; set; }
 
         // non-json members
         public Vector2 HeadPosition { get; set; }
         public Vector2 TailPosition { get; set; }
         public CanvasGeometry Line { get; set; }
         public Boolean Selected { get; set; }
-        public Int32 LineWidth { get; set; }
+        public UInt32 LineWidth { get; set; }
         public Color LineColor { get; set; }
         public Color SelectedLineColor { get; set; }
         public Boolean Redraw { get; set; }
 
         public GraphEdge()
         {
-            this.HeadVertexId = Guid.Empty;
-            this.TailVertexId = Guid.Empty;
+            //this.HeadVertexId = Guid.Empty;
+            //this.TailVertexId = Guid.Empty;
             this.Value = -1;
             this.Direction = EdgeDirection.None;
-            this.EdgeId = Guid.NewGuid();
+            //this.EdgeId = Guid.NewGuid();
             this.HeadPosition = Vector2.Zero;
             this.TailPosition = Vector2.Zero;
             this.Selected = false;
@@ -64,7 +64,7 @@ namespace GraphEditor3b3
         {
             get
             {
-                return String.Format("{0}", this.EdgeId.ToString().Substring(0, 6));
+                return String.Format("{0}", this.EdgeId);
             }
         }
 

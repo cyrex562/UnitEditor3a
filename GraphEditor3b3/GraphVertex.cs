@@ -16,11 +16,11 @@ namespace GraphEditor3b3
     public class GraphVertex
     {
         [DataMember]
-        public List<Guid> Neighbors { get; set; }
+        public List<UInt64> Neighbors { get; set; }
         [DataMember]
-        public List<Guid> Edges { get; set; }
+        public List<UInt64> Edges { get; set; }
         [DataMember]
-        public Guid VertexId { get; set; }
+        public UInt64 VertexId { get; set; }
         [DataMember]
         public Int32 Value { get; set; }
 
@@ -28,17 +28,16 @@ namespace GraphEditor3b3
         public Vector2 Position { get; set; }
         public CanvasGeometry Circle { get; set; }
         public Boolean Selected { get; set; }
-        public Int32 LineWidth { get; set; }
-        public Int32 VertexSize { get; set; }
+        public UInt32 LineWidth { get; set; }
+        public UInt32 VertexSize { get; set; }
         public Color LineColor { get; set; }
         public Color SelectedLineColor { get; set; }
         public Boolean Redraw { get; set; }
 
         public GraphVertex()
         {
-            this.Neighbors = new List<Guid>();
-            this.Edges = new List<Guid>();
-            this.VertexId = Guid.NewGuid();
+            this.Neighbors = new List<UInt64>();
+            this.Edges = new List<UInt64>();
             this.Value = -1;
             this.Position = Vector2.Zero;
             this.Selected = false;
@@ -49,10 +48,10 @@ namespace GraphEditor3b3
             this.Redraw = true;
         }
 
-        public Boolean NodeInNeighbors(Guid nodeId)
+        public Boolean NodeInNeighbors(UInt64 nodeId)
         {
             Debug.WriteLine("checking for neighbor");
-            foreach (Guid neighId in this.Neighbors)
+            foreach (UInt64 neighId in this.Neighbors)
             {
                 if (neighId == nodeId)
                 {
@@ -63,7 +62,7 @@ namespace GraphEditor3b3
             return false;
         }
 
-        public void AddNeighbor(Guid newNeighbor)
+        public void AddNeighbor(UInt64 newNeighbor)
         {
             Debug.WriteLine("adding neighbor");
             if (NodeInNeighbors(newNeighbor) == false)
@@ -72,7 +71,7 @@ namespace GraphEditor3b3
             }
         }
 
-        public void AddEdge(Guid newEdge)
+        public void AddEdge(UInt64 newEdge)
         {
             Debug.WriteLine("adding edge");
             if (EdgeInEdges(newEdge) == false)
@@ -86,10 +85,10 @@ namespace GraphEditor3b3
         /// </summary>
         /// <param name="edgeIdTerm"></param>
         /// <returns></returns>
-        public Boolean EdgeInEdges(Guid edgeIdTerm)
+        public Boolean EdgeInEdges(UInt64 edgeIdTerm)
         {
             Debug.WriteLine("checking for incident edge");
-            foreach (Guid edgeId in this.Edges)
+            foreach (UInt64 edgeId in this.Edges)
             {
                 if (edgeIdTerm == edgeId)
                 {
@@ -112,7 +111,7 @@ namespace GraphEditor3b3
         {
             get
             {
-                return String.Format("{0}", this.VertexId.ToString().Substring(0, 6));
+                return String.Format("{0}", this.VertexId);
             }
         }
 

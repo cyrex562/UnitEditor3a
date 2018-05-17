@@ -9,6 +9,7 @@ using System.Numerics;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using System.Runtime.CompilerServices;
 
 namespace GraphEditor3b3
 {
@@ -31,6 +32,9 @@ namespace GraphEditor3b3
         public GraphEdge ChangedEdge { get; set; }
         public ChangeType ChangeType { get; set; }
     }
+    //{
+
+    //}
 
     public delegate void VertexChangedEventHandler(Object sender, VertexChangedEventArgs e);
     public delegate void EdgeChangedEventHandler(Object sender, EdgeChangedEventArgs e);
@@ -41,22 +45,15 @@ namespace GraphEditor3b3
     {
         public UInt32 VertexCounter { get; set; }
         public UInt32 EdgeCounter { get; set; }
-        //[DataMember]
-        //public Guid GraphId { get; set; }
         [DataMember]
-        //public Dictionary<Guid, GraphVertex> Vertices { get; set; }
         public Dictionary<UInt32, GraphVertex> Vertices { get; set; }
         [DataMember]
-        //public Dictionary<Guid, GraphEdge> Edges { get; set; }
         public Dictionary<UInt32, GraphEdge> Edges { get; set; }
-        // adjacent matrix: a 2-D matrix in which the rows represent source vertices and columns represent dest vertices
-        //[DataMember]
-        //public Dictionary<Guid, List<Guid>> AdjacencyMatrix { get; set; }
-        // incidence matrix: a 2-D boolean matrix in which the rows represent vertices and columns represent edges.
-        // List of edges for a given Vertex ID
-        //[DataMember]
-        //public Dictionary<Guid, List<Guid>> IncidenceMatrix { get; set; }
 
+        public event VertexChangedEventHandler VerticesChanged;
+        public event EdgeChangedEventHandler EdgesChanged;
+        //public event PropertyChangedEventHandler VerticesPropertyChanged;
+        //public event PropertyChangedEventHandler EdgesPropertyChanged;
         public DrawableGraphLayout Layout { get; set; }
         public ChangeType LastVertexChange { get; set; }
         public ChangeType LastEdgeChange { get; set; }
@@ -80,6 +77,16 @@ namespace GraphEditor3b3
             this.FitToView = Defines.FIT_GRAPH_TO_VIEW;
             this.rng = new Random();
         }
+
+        //public void OnVertexPropertyChanged([CallerMemberName] string propertyName = null)
+        //{
+        //    this.VerticesPropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        //}
+
+        //public void OnEdgePropertyChanged([CallerMemberName] string propertyName = null)
+        //{
+        //    this.EdgesPropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        //}
 
         public void Draw(CanvasDrawingSession cds)
         {
@@ -136,69 +143,6 @@ namespace GraphEditor3b3
             }
         }
 
-        //public static Graph LayoutDGraphRandom(
-        //    Boolean fitGraphToView,
-        //    Random rng,
-        //    CanvasControl canvas,
-        //    Graph graph)
-        //{
-        //    Debug.WriteLine("Laying out graph in random pattern");
-        //    //Dictionary<Guid, DrawableVertex> dVerts;
-        //    //Dictionary<Guid, DrawableEdge> dEdges;
-        //    Graph dg = new Graph();
-        //    dg.Layout = DrawableGraphLayout.Random;
-        //    dg.FitToView = fitGraphToView;
-
-        //    foreach (KeyValuePair<Guid, GraphVertex> kvp in graph.Vertices)
-        //    {
-        //        Int32 min_x = Defines.VERTEX_SIZE;
-        //        Int32 min_y = Defines.VERTEX_SIZE;
-        //        Int32 max_x = 0;
-        //        Int32 max_y = 0;
-        //        if (fitGraphToView == true)
-        //        {
-        //            max_x = (Int32)canvas.ActualWidth - Defines.VERTEX_SIZE - Defines.MAX_VERT_SPACE;
-        //            max_y = (Int32)canvas.ActualHeight - Defines.VERTEX_SIZE - Defines.MAX_VERT_SPACE;
-        //        }
-        //        else
-        //        {
-        //            max_x = Defines.VERTEX_SIZE * (graph.Vertices.Count + Defines.MAX_VERT_SPACE);
-        //            max_y = Defines.VERTEX_SIZE * (graph.Vertices.Count + Defines.MAX_VERT_SPACE);
-        //        }
-
-        //        Vector2 circlePos = new Vector2(rng.Next(min_x, max_x), rng.Next(min_y, max_y));
-        //        GraphVertex dn = new GraphVertex
-        //        {
-        //            Position = circlePos,
-        //            VertexId = kvp.Value.VertexId,
-        //            Circle = CanvasGeometry.CreateCircle(canvas, circlePos, Defines.VERTEX_SIZE)
-        //        };
-        //        dg.Vertices[dn.VertexId] = dn;
-        //    }
-
-        //    foreach (KeyValuePair<Guid, GraphEdge> kvp in graph.Edges)
-        //    {
-        //        CanvasPathBuilder pathBuilder = new CanvasPathBuilder(canvas);
-
-        //        GraphEdge de = new GraphEdge
-        //        {
-        //            EdgeId = kvp.Value.EdgeId,
-        //            HeadVertexId = kvp.Value.HeadVertexId,
-        //            TailVertexId = kvp.Value.TailVertexId,
-        //        };
-        //        de.HeadPosition = dg.Vertices[de.HeadVertexId].Position;
-        //        de.TailPosition = dg.Vertices[de.TailVertexId].Position;
-        //        pathBuilder.BeginFigure(de.HeadPosition);
-        //        pathBuilder.AddLine(de.TailPosition);
-        //        pathBuilder.EndFigure(CanvasFigureLoop.Open);
-        //        de.Line = CanvasGeometry.CreatePath(pathBuilder);
-        //        dg.Edges[de.EdgeId] = de;
-        //    }
-
-        //    //canvas.Invalidate();
-        //    return dg;
-        //}
-
         protected virtual void OnVerticesChanged(VertexChangedEventArgs e)
         {
             Debug.WriteLine("on vertices changed");
@@ -219,8 +163,7 @@ namespace GraphEditor3b3
             }
         }
 
-        public event VertexChangedEventHandler VerticesChanged;
-        public event EdgeChangedEventHandler EdgesChanged;
+        
 
         /// <summary>
         /// adjacent: whether there is an edge from vertex x to vertex y

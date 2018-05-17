@@ -30,8 +30,8 @@ namespace GraphEditor3b3
         UInt32 minVertices;
         UInt32 maxVertices;
         Double edgeProbability;
-        ObservableCollection<GraphVertex> observableVertices;
-        ObservableCollection<GraphEdge> observableEdges;
+        //ObservableCollection<GraphVertex> observableVertices;
+        //ObservableCollection<GraphEdge> observableEdges;
 
         public MainPage()
         {
@@ -51,46 +51,12 @@ namespace GraphEditor3b3
             this.observableVertices = new ObservableCollection<GraphVertex>();
             this.observableEdges = new ObservableCollection<GraphEdge>();
         }
-
-        //private void SetCurrentGraph(Graph inGraph)
-        //{
-        //    Debug.WriteLine("setting current graph");
-        //    if (inGraph != null)
-        //    {
-        //        Debug.WriteLine("clearing observable edges and vertices");
-        //        this.observableEdges.Clear();
-        //        this.observableVertices.Clear();
-        //        this.currentGraph = inGraph;
-
-        //        Debug.WriteLine("adding new graph observable edges and vertices");
-        //        foreach(KeyValuePair<Guid, GraphVertex> kvp in inGraph.Vertices) {
-        //            this.observableVertices.Add(kvp.Value);
-        //        }
-
-        //        foreach(KeyValuePair<Guid, GraphEdge> kvp in inGraph.Edges)
-        //        {
-        //            this.observableEdges.Add(kvp.Value);
-        //        }
-
-        //        Debug.WriteLine("setting new graph edges and vertices changed listeners");
-        //        this.currentGraph.EdgesChanged += this.EdgesChanged;
-        //        this.currentGraph.VerticesChanged += this.VerticesChanged;
-
-        //        Debug.WriteLine("setting node and vertex counts");
-        //        this.VertexCountTxtBlock.Text = String.Format("# Of Vertices: {0}", this.currentGraph.Vertices.Count);
-        //        this.EdgeCountTxtBlock.Text = String.Format("# of Edges: {0}", this.currentGraph.Edges.Count);
-        //    } else
-        //    {
-        //        this.VertexCountTxtBlock.Text = "# Of Vertices: (No Graph)";
-        //        this.EdgeCountTxtBlock.Text = "# of Edges: (No Graph)";
-        //    }
-        //}
-
+        
         private void ClearObservables()
         {
             Debug.WriteLine("clear observable edges and vertices");
-            this.observableEdges.Clear();
-            this.observableVertices.Clear();
+            //this.observableEdges.Clear();
+            //this.observableVertices.Clear();
         }
 
 
@@ -100,8 +66,10 @@ namespace GraphEditor3b3
             Debug.WriteLine("init observable edges and vertices");
             foreach (KeyValuePair<UInt32, GraphVertex> kvp in this.currentGraph.Vertices)
             {
-                this.observableVertices.Add(kvp.Value);
+                //this.observableVertices.Add(kvp.Value);
+                VertexList.Items.Add(kvp.Value);
             }
+            VertexList.ItemsSource = 
 
             foreach (KeyValuePair<UInt32, GraphEdge> kvp in this.currentGraph.Edges)
             {
@@ -452,8 +420,10 @@ namespace GraphEditor3b3
             }
         }
 
+        
         private void ToggleSelectVertex(GraphVertex dv)
         {
+            // Locate the clicked vertex
             Debug.WriteLine("Toggle select vertex");
             Int32 listIndex = GetVertexListIndex(dv.VertexId);
             if (dv.Selected)
@@ -466,6 +436,8 @@ namespace GraphEditor3b3
                 this.VertexList.SelectRange(new ItemIndexRange(listIndex, 1));
                 dv.Select();
             }
+
+            VertexList.Items.F
         }
 
         private void CanvasPointerPressed(
